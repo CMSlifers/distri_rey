@@ -18,7 +18,7 @@
        
 
           <br>
-        <v-list-item class="list-group" prepend-icon="mdi mdi-home" title="Home" value="home"></v-list-item>
+        <v-list-item class="list-group" prepend-icon="mdi mdi-home" title="Home" value="home" to="ViewHome"></v-list-item>
 
 
         <v-list-group  value="Personas" prepend-icon="mdi-account-group-outline">
@@ -28,8 +28,8 @@
               title="Personas"
             ></v-list-item>
           </template>
-            <v-list-item class="list-items" prepend-icon="mdi-account" title="Proveedores" value="proveedores"></v-list-item>
-            <v-list-item class="list-items" prepend-icon="mdi mdi-account-tie" title="Clientes" value="clientes"></v-list-item>  
+            <v-list-item class="list-items" prepend-icon="mdi-account" title="Proveedores" value="proveedores" to="/ViewProveedores"></v-list-item>
+            <v-list-item class="list-items" prepend-icon="mdi mdi-account-tie" title="Clientes" value="clientes" to="/ViewClientes"></v-list-item>  
             <v-list-item class="list-items" prepend-icon="mdi mdi-account-group" title="Usuarios" value="users" to="/ViewUsuarios"></v-list-item>      
         </v-list-group>
 
@@ -40,10 +40,10 @@
               title="Productos"
             ></v-list-item>
           </template> 
-            <v-list-item class="list-items" prepend-icon="mdi mdi-shape-plus" title="Categoria" value="categoria"></v-list-item>  
-            <v-list-item class="list-items" prepend-icon="mdi mdi-table-large" title="Inventarios" value="inventarios" to="/ViewLogin"></v-list-item> 
-            <v-list-item class="list-items" prepend-icon="mdi mdi-currency-usd" title="Precios" value="precio"></v-list-item> 
-            <v-list-item class="list-items" prepend-icon="mdi-account-group-outline" title="Productos" value="productos"></v-list-item>
+            <v-list-item class="list-items" prepend-icon="mdi mdi-shape-plus" title="Categoria" value="categoria" to="/ViewCategoria"></v-list-item>  
+            <v-list-item class="list-items" prepend-icon="mdi mdi-table-large" title="Inventarios" value="inventarios" to="/ViewInventario"></v-list-item> 
+            <v-list-item class="list-items" prepend-icon="mdi mdi-currency-usd" title="Precios" value="precio" to="/ViewPrecios"></v-list-item> 
+            <v-list-item class="list-items" prepend-icon="mdi-account-group-outline" title="Productos" value="productos" to="/ViewProductos"></v-list-item>
             
    
         </v-list-group>
@@ -55,8 +55,8 @@
               title="Transacciones"
             ></v-list-item>
           </template>     
-            <v-list-item class="list-items" prepend-icon="mdi mdi-shopping" title="Compras" value="compras" ></v-list-item>
-            <v-list-item class="list-items" prepend-icon="mdi mdi-account-cash" title="Ventas" value="ventas"></v-list-item>   
+            <v-list-item class="list-items" prepend-icon="mdi mdi-shopping" title="Compras" value="compras" to="/ViewCompras" ></v-list-item>
+            <v-list-item class="list-items" prepend-icon="mdi mdi-account-cash" title="Ventas" value="ventas" to="ViewVentas"></v-list-item>   
         </v-list-group>
 
 
