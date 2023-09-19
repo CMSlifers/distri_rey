@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <h1>Insertar Datos a Firebase</h1>
+    <h1>Usuarios</h1>
     <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat>
