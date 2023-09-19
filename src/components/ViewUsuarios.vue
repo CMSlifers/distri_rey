@@ -104,6 +104,7 @@ export default {
     ],
     desserts: [],
     editedIndex: -1,
+      /*Aqui se deben cambiar los datos dependiendo el componente*/
     editedItem: {
       keyid: '',
       id: 0,
@@ -138,21 +139,26 @@ export default {
   },
 
   created() {
-    this.listarUsuarios()
+    this.listarDatos()
   },
 
   methods: {
 
-
+        /*Este metodo Elimina un documento de la base de datos guiandose por el id*/
     async eliminarDocumentos() {
       await deleteDoc(doc(db, "usuarios", this.editedItem.keyid));
 
     },
 
+        /*Este metodo Limpia la grilla tan pronto se crea un nuevo usuario para evitar errores*/
+    async limpiarCrud(){
 
-
-
-    async actualizarUsuarios() {
+      this.desserts=[]
+     
+    }
+    ,
+        /*Este metodo nos permite actualizar los datos en la base de datos */
+    async actualizarDatos() {
       console.log(this.editedItem.keyid)
       const Ref = doc(db, "usuarios", this.editedItem.keyid);
       await updateDoc(Ref, {
@@ -164,7 +170,9 @@ export default {
 
     },
 
-    async createUsuario() {
+      /*Este es le metodo que nos permite agregar nuevos datos a firebase*/
+
+    async crearRegistros() {
       const colRef = collection(db, 'usuarios')
       console.log(this.editedItem.name, this.editedItem.id, this.editedItem.usuario, this.editedItem.nombre, this.editedItem.password,)
       const dataObj = {
@@ -175,10 +183,13 @@ export default {
 
       }
       const docRef = await addDoc(colRef, dataObj);
-      console.log("Creo el usuario con nombre", docRef.id)
+      console.log("Creo el usuario con nombre", docRef.id);
+   
     },
 
-    async listarUsuarios() {
+          /* Con este metodo podemos mostrar los datos en la grilla trayendolos de la base de datos*/
+
+    async listarDatos() {
 
       const q = query(collection(db, "usuarios"));
       const resul = await getDocs(q);
@@ -197,7 +208,7 @@ export default {
 
     },
 
-
+   
     initialize() {
       this.desserts = [
         /*         {
@@ -256,10 +267,12 @@ export default {
     save() {
       if (this.editedIndex > -1) {
         Object.assign(this.desserts[this.editedIndex], this.editedItem);
-        this.actualizarUsuarios()
+        this.actualizarDatos()
       } else {
         this.desserts.push(this.editedItem)
-        this.createUsuario()
+        this.crearRegistros();
+        this.limpiarCrud();
+        this.listarDatos();
       }
       this.close()
 

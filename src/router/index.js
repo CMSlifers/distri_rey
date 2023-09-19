@@ -12,7 +12,7 @@ import ViewCompras from '../components/ViewCompras.vue'
 import ViewVentas from '../components/ViewVentas.vue'
 const routes = [
     { path: "/ViewLogin", name: "ViewLogin",component: ViewLogin}, 
-    { path: "/ViewHome", name: "ViewHome",component: ViewHome}, 
+    { path: "/", name: "ViewHome",component: ViewHome}, 
     /* phat personas */
     { path: "/ViewProveedores",name: "Viewproveedores",component: ViewProveedores, },
     { path: "/ViewClientes",name: "Viewclientes",component: ViewClientes, },

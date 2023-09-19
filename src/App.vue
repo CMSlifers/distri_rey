@@ -18,7 +18,7 @@
        
 
           <br>
-        <v-list-item class="list-group" prepend-icon="mdi mdi-home" title="Home" value="home" to="ViewHome"></v-list-item>
+        <v-list-item class="list-group" prepend-icon="mdi mdi-home" title="Home" value="home" to="/"></v-list-item>
 
 
         <v-list-group  value="Personas" prepend-icon="mdi-account-group-outline">
