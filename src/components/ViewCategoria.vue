@@ -3,7 +3,7 @@
         <h1>Categorias</h1>
         <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1">
             <template v-slot:top>
-                <v-toolbar flat>
+                <v-toolbar class="crud-title" flat>
                     <v-toolbar-title>My CRUD Categorias</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
@@ -267,4 +267,12 @@ export default {
 
 }
 </script>
+
+<style scoped>
+.crud-title{
+background-color:#1A237E;
+color: white;
+}
+
+</style>
     

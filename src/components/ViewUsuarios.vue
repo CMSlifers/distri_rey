@@ -1,15 +1,14 @@
 <template>
   <v-container>
-    <h1>Usuarios</h1>
     <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1">
-      <template v-slot:top>
-        <v-toolbar flat>
+      <template  v-slot:top>
+        <v-toolbar class="crud-title" flat>
           <v-toolbar-title>Usuarios</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ props }">
-              <v-btn color="primary" dark class="mb-2" v-bind="props">
+              <v-btn color="white" dark class="mb-2" v-bind="props">
                 Crear Usuario
               </v-btn>
             </template>
@@ -294,7 +293,7 @@ export default {
         vianum1: this.editedItem.vianum1,
         vianum2: this.editedItem.vianum2,
         vianum3: this.editedItem.vianum3,
-        departamento: this.editedItem.departamento.departamento,
+        departamento: this.editedItem.departamento,
         direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # '+this.editedItem.vianum2 + ' - '+this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
 
 
@@ -317,10 +316,15 @@ export default {
           dni: doc.data().dni,
           nombre: doc.data().nombre,
           usuario: doc.data().usuario,
-          direccion: doc.data().direccion,
           email: doc.data().email,
           rol: doc.data().rol,
-          password: doc.data().password
+          password: doc.data().password,
+          direccion: doc.data().direccion,
+          departamento: doc.data().departamento,
+          via: doc.data().via,
+          vianum1: doc.data().vianum1,
+          vianum2: doc.data().vianum2,
+          vianum3: doc.data().vianum3,
         })
 
       })
@@ -386,7 +390,9 @@ export default {
     save() {
       if (this.editedIndex > -1) {
         Object.assign(this.desserts[this.editedIndex], this.editedItem);
-        this.actualizarDatos()
+        this.actualizarDatos();
+        this.limpiarCrud();
+        this.listarDatos();
       } else {
         this.desserts.push(this.editedItem)
         this.crearRegistros();
@@ -403,3 +409,8 @@ export default {
 }
 </script>
     
+<style scoped>
+.crud-title{
+    background-color:#1A237E;
+    color: white;
+}</style>

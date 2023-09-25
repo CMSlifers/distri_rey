@@ -1294,5 +1294,11 @@ export const colombiaJS=[
         "Puerto Carreño",
         "Santa Rosalía"
       ]
-    }
+    },
+    {
+      id: 32,
+      departamento: 0,
+     ciudades:[0]
+      
+    },
   ]

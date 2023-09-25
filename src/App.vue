@@ -6,6 +6,7 @@
     
 
     <v-toolbar-title>Distribuciones Rey 👑</v-toolbar-title>
+    <h6>Usuario Logueado {{ dato }} </h6>
     <v-btn class="login"  to="/ViewLogin">LOG IN</v-btn>
     <v-btn class="loginOut" @click="logout">LOG OUT</v-btn>
 
@@ -76,8 +77,9 @@
      
 
     </v-navigation-drawer>
+    <router-view></router-view>
   </v-main>
-    <v-main><router-view></router-view></v-main>  
+    <v-main></v-main>  
   </v-app>
 
 </template>
@@ -111,6 +113,7 @@ export default {
     return {
       drawer: false,
       rail: true,
+      dato: this.$store.state.usuario,
 
     }
   },

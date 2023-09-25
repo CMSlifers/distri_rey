@@ -1,15 +1,15 @@
 <template>
     <v-container>
       <h1>Productos</h1>
-      <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1">
+      <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-2">
         <template v-slot:top>
-          <v-toolbar flat>
+          <v-toolbar class="crud-title" flat>
             <v-toolbar-title>My Crud Productos</v-toolbar-title>
             <v-divider class="mx-4" inset vertical></v-divider>
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
               <template v-slot:activator="{ props }">
-                <v-btn color="primary" dark class="mb-2" v-bind="props">
+                <v-btn color="white" dark class="mb-2" v-bind="props">
                   Crear Productos
                 </v-btn>
               </template>
@@ -296,3 +296,12 @@
   }
   </script>
       
+<style scoped>
+  .crud-title{
+      background-color:#1A237E;
+      color: white;
+  }
+ 
+  
+  
+  </style>
