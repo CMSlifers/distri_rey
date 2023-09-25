@@ -1295,9 +1295,4 @@ export const colombiaJS=[
         "Santa Rosalía"
       ]
     }
-<<<<<<< HEAD
   ]
-=======
-  ]
-
->>>>>>> 87654204206f06c708f8b0492a9325207787b11b
