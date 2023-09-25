@@ -7,7 +7,7 @@
 
     <v-toolbar-title>Distribuciones Rey 👑</v-toolbar-title>
     <h6>Usuario Logueado {{ dato }} </h6>
-    <v-btn class="login"  to="/ViewLogin">LOG IN</v-btn>
+    <v-btn class="login"  @click="login">LOG IN</v-btn>
     <v-btn class="loginOut" @click="logout">LOG OUT</v-btn>
 
     </v-toolbar>
@@ -120,10 +120,24 @@ export default {
 
 
   methods: {
+
+
+    login() {
+      //incluir codigo para destruir sesion      
+      this.$router.push({ name: 'ViewLogin' });
+      this.dato = this.$store.state.usuario
+      console.log("datos ",this.$store.state.usuario)
+    },
+
     logout() {
       //incluir codigo para destruir sesion
       this.$router.push({ name: 'ViewLogin' }); // redirecciona a login
+      this.dato = this.$store.state.usuario
+      console.log("datos ",this.$store.state.usuario)
+      /* this.dato = "" */
     }
+
+
   }
 
   

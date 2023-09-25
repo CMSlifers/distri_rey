@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <v-card
       class="mx-auto pa-12 pb-8"
       elevation="8"
@@ -96,7 +97,8 @@ export default {
   },
 
   methods: {
-
+    
+   
     async validarUser() {
       
       //vuelvo vacia la bariable mensaje error
@@ -124,7 +126,9 @@ export default {
           // Extraigo el campo "nombre" del documento
           const nombreUsuario = usuarioDoc.data().nombre;
           const rolUsuario = usuarioDoc.data().rol;
-          console.log('Nombre del usuario logueado:', nombreUsuario, ' su rol es ', rolUsuario);        
+          console.log('Nombre del usuario logueado:', nombreUsuario, ' su rol es ', rolUsuario);   
+          this.$store.state.usuario = nombreUsuario      
+
   
         } else {
           // No se encontró un usuario con los datos ingresados, mostrar un mensaje de error.
@@ -141,6 +145,8 @@ export default {
         // Maneja el error de consulta de la base de datos aquí.
       }
     },
+
+
   },
 
 };
