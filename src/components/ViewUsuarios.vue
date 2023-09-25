@@ -54,7 +54,7 @@
                   <p>Direccion:</p>
                   <v-row>
 
-                    <v-col cols="12" sm="8" md="8">
+                    <v-col cols="12" sm="6" md="8">
                       <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
                         v-model="editedItem.departamento" clearable label="Departamento" :items="itemsDeps"
                         item-title="departamento">
