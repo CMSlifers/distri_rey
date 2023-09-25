@@ -7,6 +7,8 @@
 
     <v-toolbar-title>Distribuciones Rey 👑</v-toolbar-title>
     <v-btn class="login"  to="/ViewLogin">LOG IN</v-btn>
+    <v-btn class="loginOut" @click="logout">LOG OUT</v-btn>
+
     </v-toolbar>
     
 
@@ -96,6 +98,8 @@ export default {
 }
  */
 
+
+ 
  export default {
   name: 'App',
 
@@ -107,11 +111,24 @@ export default {
     return {
       drawer: false,
       rail: true,
+
     }
   },
-}
 
+
+  methods: {
+    logout() {
+      //incluir codigo para destruir sesion
+      this.$router.push({ name: 'ViewLogin' }); // redirecciona a login
+    }
+  }
+
+  
+
+}
 </script>
+
+
 
 <style scoped>
 
@@ -135,6 +152,10 @@ export default {
 
 .login:hover{
   background: #0a8114;
+    color: #ffffff;
+}
+.loginOut:hover{
+  background: #d40723;
     color: #ffffff;
 }
 .body-1111{

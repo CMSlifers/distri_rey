@@ -1,9 +1,19 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import { createPinia } from 'pinia'
 import vuetify from './plugins/vuetify'
 import { loadFonts } from './plugins/webfontloader'
 
+
 import router from './router'
+
+loadFonts()
+
+createApp(App)
+  .use(vuetify)
+  .use(createPinia())
+  .use(router)
+  .mount('#app')
 
 /* 
 App
@@ -19,6 +29,8 @@ function loadJSON(callback) {
 	xobj.send(null);
 }
 
+
+
 function init() {
 	loadJSON(function (response) {
 		// Parse JSON string into object
@@ -26,11 +38,7 @@ function init() {
 	});
 } */
 
-loadFonts()
 
-createApp(App)
-  .use(vuetify)
-  .use(router)
-  .mount('#app')
+ 
 
 

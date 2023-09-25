@@ -4,13 +4,13 @@
     <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1">
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>My CRUD</v-toolbar-title>
+          <v-toolbar-title>Usuarios</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ props }">
               <v-btn color="primary" dark class="mb-2" v-bind="props">
-                New Item
+                Crear Usuario
               </v-btn>
             </template>
             <v-card>
@@ -19,6 +19,9 @@
               </v-card-title>
 
               <v-card-text>
+                <ul>
+
+                </ul>
                 <v-container>
                   <v-row>
 
@@ -26,16 +29,64 @@
                       <v-text-field v-model="editedItem.id" label="id"></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.usuario" label="usuario"></v-text-field>
+                      <v-text-field v-model="editedItem.dni" label="dni"></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field v-model="editedItem.nombre" label="nombre"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field v-model="editedItem.usuario" label="usuario"></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field v-model="editedItem.email" label="email"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field v-model="editedItem.rol" label="rol"></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field v-model="editedItem.password" label="password"></v-text-field>
                     </v-col>
                   </v-row>
                 </v-container>
+
+                <v-container>
+                  <p>Direccion:</p>
+                  <v-row>
+
+                    <v-col cols="12" sm="8" md="8">
+                      <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
+                        v-model="editedItem.departamento" clearable label="Departamento" :items="itemsDeps"
+                        item-title="departamento">
+                      </v-combobox>
+                    </v-col>
+
+                    <v-col cols="12" sm="6" md="4">
+                      <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
+                        v-model="editedItem.via" label="Tipo de Vía" :items="itemsVia" item-title="tipo">
+                      </v-combobox>
+                    </v-col>
+
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field v-model="editedItem.vianum1" label="Segun tipo de via"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field v-model="editedItem.vianum2" label="#"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
+                    </v-col>
+
+                    <!--                     <v-col cols="12" sm="6" md="8">
+                      <v-combobox auto-select-first="exact" return-object clearable label="Ciudad" :items="itemsDeps"
+                        item-title="ciudades">
+                      </v-combobox>
+                    </v-col>
+ -->
+                  </v-row>
+                </v-container>
+
+
               </v-card-text>
 
               <v-card-actions>
@@ -78,16 +129,40 @@
     </v-data-table>
   </v-container>
 </template>
-  
+    
 
 <script>
 
 import db from '../firebase/init.js'
-import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore'
+import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { colombiaJS } from "/colombia.js";
 
+console.log("Segundo colombia js")
+console.log(colombiaJS)
 export default {
+
+
   data: () => ({
+    rules: {
+      required: value => !!value || 'Field is required',
+    },
+
+    itemsDeps: colombiaJS,
+    itemsVia: [
+      { id: 0, tipo: "Anillo" },
+      { id: 1, tipo: "Autopista" },
+      { id: 2, tipo: "Avenida" },
+      { id: 3, tipo: "Avenida Calle" },
+      { id: 4, tipo: "Avenida Carrera" },
+      { id: 5, tipo: "Calle" },
+      { id: 6, tipo: "Carrera" },
+      { id: 7, tipo: "Circular" },
+      { id: 8, tipo: "Diagonal" },
+      { id: 0, tipo: "Transversal" }
+    ],
+
     dialog: false,
+
     dialogDelete: false,
     headers: [
       {
@@ -97,29 +172,55 @@ export default {
         key: 'name',
       },
       { title: 'Id', key: 'id' },
-      { title: 'Usuario', key: 'usuario' },
+      { title: 'DNI', key: 'dni' },
       { title: 'Nombre', key: 'nombre' },
-      { title: 'password', key: 'password' },
+      { title: 'Usuario', key: 'usuario' },
+      { title: 'Email', key: 'email' },
+      { title: 'Rol', key: 'rol' },
+      { title: 'Contraseña', key: 'password' },
+      { title: 'Direccion', key: 'direccion' },
       { title: 'Actions', key: 'actions', sortable: false },
     ],
     desserts: [],
     editedIndex: -1,
-      /*Aqui se deben cambiar los datos dependiendo el componente*/
+    /*Aqui se deben cambiar los datos dependiendo el componente*/
     editedItem: {
       keyid: '',
       id: 0,
-      usuario: 0,
+      dni: 0,
       nombre: 0,
+      usuario: 0,
+      email: 0,
+      rol: 0,
       password: 0,
+      via: 0,
+      vianum1: 0,
+      vianum2: 0,
+      vianum3: 0,
+      departamento: 0,
+      direccion: 0,
     },
     defaultItem: {
       name: '',
       id: 0,
-      usuario: 0,
+      dni: 0,
       nombre: 0,
+      usuario: 0,
+      email: 0,
+      rol: 0,
       password: 0,
+      via: 0,
+      vianum1: 0,
+      vianum2: 0,
+      vianum3: 0,
+      departamento: 0,
+      direccion: 0,
     },
+
+
   }),
+
+
 
   computed: {
     formTitle() {
@@ -129,65 +230,79 @@ export default {
 
 
 
-  watch: {
-    dialog(val) {
-      val || this.close()
-    },
-    dialogDelete(val) {
-      val || this.closeDelete()
-    },
-  },
-
   created() {
     this.listarDatos()
   },
 
   methods: {
 
-        /*Este metodo Elimina un documento de la base de datos guiandose por el id*/
+
+    /*Este metodo Elimina un documento de la base de datos guiandose por el id*/
     async eliminarDocumentos() {
       await deleteDoc(doc(db, "usuarios", this.editedItem.keyid));
 
     },
 
-        /*Este metodo Limpia la grilla tan pronto se crea un nuevo usuario para evitar errores*/
-    async limpiarCrud(){
+    /*Este metodo Limpia la grilla tan pronto se crea un nuevo usuario para evitar errores*/
+    async limpiarCrud() {
 
-      this.desserts=[]
-     
+      this.desserts = []
+
     }
     ,
-        /*Este metodo nos permite actualizar los datos en la base de datos */
+
+    /*Este es le metodo que nos permite agregar nuevos datos a firebase*/
+
+    async crearRegistros() {
+      const colRef = collection(db, 'usuarios')
+      console.log(this.editedItem.name, this.editedItem.id, this.editedItem.usuario, this.editedItem.nombre, this.editedItem.password,)
+
+      const dataObj = {
+        id: this.editedItem.id,
+        dni: this.editedItem.dni,
+        nombre: this.editedItem.nombre,
+        usuario: this.editedItem.usuario,
+        email: this.editedItem.email,
+        rol: this.editedItem.rol,
+        via: this.editedItem.via,
+        vianum1: this.editedItem.vianum1,
+        vianum2: this.editedItem.vianum2,
+        vianum3: this.editedItem.vianum3,
+        password: this.editedItem.password,
+        departamento: this.editedItem.departamento.departamento,
+        direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # '+this.editedItem.vianum2 + ' - '+this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
+
+
+
+      }
+      const docRef = await addDoc(colRef, dataObj);
+      console.log("Creo el usuario con nombre", docRef.id);
+
+    },
+    /*Este metodo nos permite actualizar los datos en la base de datos */
     async actualizarDatos() {
       console.log(this.editedItem.keyid)
       const Ref = doc(db, "usuarios", this.editedItem.keyid);
       await updateDoc(Ref, {
-        usuario: this.editedItem.usuario,
+        dni: this.editedItem.dni,
         nombre: this.editedItem.nombre,
+        usuario: this.editedItem.usuario,
+        email: this.editedItem.email,
+        rol: this.editedItem.rol,
         password: this.editedItem.password,
+        via: this.editedItem.via,
+        vianum1: this.editedItem.vianum1,
+        vianum2: this.editedItem.vianum2,
+        vianum3: this.editedItem.vianum3,
+        departamento: this.editedItem.departamento.departamento,
+        direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # '+this.editedItem.vianum2 + ' - '+this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
+
 
       })
 
     },
 
-      /*Este es le metodo que nos permite agregar nuevos datos a firebase*/
-
-    async crearRegistros() {
-      const colRef = collection(db, 'usuarios')
-      console.log(this.editedItem.name, this.editedItem.id, this.editedItem.usuario, this.editedItem.nombre, this.editedItem.password,)
-      const dataObj = {
-        id: this.editedItem.id,
-        usuario: this.editedItem.usuario,
-        nombre: this.editedItem.nombre,
-        password: this.editedItem.password,
-
-      }
-      const docRef = await addDoc(colRef, dataObj);
-      console.log("Creo el usuario con nombre", docRef.id);
-   
-    },
-
-          /* Con este metodo podemos mostrar los datos en la grilla trayendolos de la base de datos*/
+    /* Con este metodo podemos mostrar los datos en la grilla trayendolos de la base de datos*/
 
     async listarDatos() {
 
@@ -199,8 +314,12 @@ export default {
         this.desserts.push({
           keyid: doc.id,
           id: doc.data().id,
-          usuario: doc.data().usuario,
+          dni: doc.data().dni,
           nombre: doc.data().nombre,
+          usuario: doc.data().usuario,
+          direccion: doc.data().direccion,
+          email: doc.data().email,
+          rol: doc.data().rol,
           password: doc.data().password
         })
 
@@ -208,7 +327,7 @@ export default {
 
     },
 
-   
+
     initialize() {
       this.desserts = [
         /*         {
@@ -283,4 +402,4 @@ export default {
 
 }
 </script>
-  
+    
