@@ -82,7 +82,7 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
-                                    Cancel
+                                    Cancelar
                                 </v-btn>
                                 <v-btn color="blue-darken-1" variant="text" @click="save">
                                     Añadir Nuevo Proveedor
@@ -95,7 +95,7 @@
                             <v-card-title class="text-h6">¿Está seguro que desea eliminar este proveedor?</v-card-title>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
+                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancelar</v-btn>
                                 <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
                                 <v-spacer></v-spacer>
                             </v-card-actions>
