@@ -299,10 +299,14 @@ export default {
     save() {
       if (this.editedIndex > -1) {
         Object.assign(this.desserts[this.editedIndex], this.editedItem);
+<<<<<<< HEAD
         this.actualizarDatos();
         this.limpiarCrud();
         this.listarDatos();
         
+=======
+        this.actualizarDatos()
+>>>>>>> bcee80105a20c8837019bd8ac92a08a71827286d
       } else {
         this.desserts.push(this.editedItem)
         this.crearRegistros();
