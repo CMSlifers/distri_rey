@@ -1,16 +1,16 @@
 <template>
     <v-container>
-        <h1>Categorias</h1>
+   
         <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1">
             <template v-slot:top>
                 <v-toolbar class="crud-title" flat>
-                    <v-toolbar-title>My CRUD Categorias</v-toolbar-title>
+                    <v-toolbar-title>Categorias</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ props }">
-                            <v-btn color="primary" dark class="mb-2" v-bind="props">
-                                New Item
+                            <v-btn color="white" dark class="mb-2" v-bind="props">
+                                Nueva Categoria
                             </v-btn>
                         </template>
                         <v-card>
@@ -35,9 +35,9 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
-                                    Cancel
+                                    Cancelar
                                 </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="save">
+                                <v-btn color="blue-darken-1"  variant="text" @click="save">
                                     Añadir Nueva Categoria
                                 </v-btn>
                             </v-card-actions>
@@ -45,7 +45,7 @@
                     </v-dialog>
                     <v-dialog v-model="dialogDelete" max-width="500px">
                         <v-card>
-                            <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
+                            <v-card-title class="text-h5">¿Seguro desea eliminar esta Categoria?</v-card-title>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
@@ -57,10 +57,10 @@
                 </v-toolbar>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-                <v-icon size="small" class="me-2" @click="editItem(item.raw)">
+                <v-icon size="small" color="primary" class="me-2" @click="editItem(item.raw)">
                     mdi-pencil
                 </v-icon>
-                <v-icon size="small" @click="deleteItem(item.raw)">
+                <v-icon size="small" color="red" @click="deleteItem(item.raw)">
                     mdi-delete
                 </v-icon>
             </template>
@@ -92,6 +92,7 @@ export default {
             },
             { title: 'Id', key: 'id' },
             { title: 'Categoria', key: 'categoria' },
+            { title: 'Actions', key: 'actions' },
 
         ],
         desserts: [],
@@ -113,7 +114,7 @@ export default {
 
     computed: {
         formTitle() {
-            return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+            return this.editedIndex === -1 ? 'Nueva Categoria' : 'Editar Categoria'
         },
     },
 

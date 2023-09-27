@@ -1,5 +1,3 @@
 <template>
-    <h1>soy home </h1>
-    </template>
-    <script>
-    </script>
+  <h1>Soy Home</h1>
+</template>

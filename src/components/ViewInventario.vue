@@ -1,7 +1,3 @@
 <template>
-
-<h1></h1>
+  <h1>Soy Inventario</h1>
 </template>
-
-<script>
-</script>

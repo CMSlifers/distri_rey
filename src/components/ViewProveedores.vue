@@ -1,14 +1,17 @@
 <template>
     <v-container>
-     
+
         <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1 ">
             <template v-slot:top>
                 <v-toolbar class="crud-title" flat>
-                    <v-toolbar-title >Proveedores</v-toolbar-title>
+                    <v-toolbar-title>Proveedores</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ props }">
+ <!--                           <v-btn @click="imprimir()" color="white" dark class="mb-2" v-bind="props"  prepend-icon="mdi mdi-note">
+                                PDF
+                            </v-btn> -->
                             <v-btn color="white" dark class="mb-2" v-bind="props">
                                 Nuevo Proveedor
                             </v-btn>
@@ -82,7 +85,7 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
-                                    Cancel
+                                    Cancelar
                                 </v-btn>
                                 <v-btn color="blue-darken-1" variant="text" @click="save">
                                     Añadir Nuevo Proveedor
@@ -95,7 +98,7 @@
                             <v-card-title class="text-h6">¿Está seguro que desea eliminar este proveedor?</v-card-title>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
+                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancelar</v-btn>
                                 <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
                                 <v-spacer></v-spacer>
                             </v-card-actions>
@@ -126,6 +129,7 @@
 import db from '../firebase/init.js'
 import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore'
 import { colombiaJS } from "/colombia.js";
+/* import { jsPDF } from "jspdf"; */
 export default {
     data: () => ({
         rules: {
@@ -372,21 +376,43 @@ export default {
             this.close()
 
         },
+/* 
+        async imprimir() {
+
+            let columns = [
+                { title: 'Id', key: 'id' },
+                { title: 'Nit', key: 'nit' },
+                { title: 'Nombre', key: 'nombre' },
+                { title: 'Email', key: 'email' },
+                { title: 'Telefono', key: 'telefono' },
+                { title: 'Direccion', key: 'direccion' },
+                
+                
+            ];
+
+            let registros = this.desserts;
+            let doc = new jsPDF("p", "pt");
+            doc.autoTable(columns, registros, {
+                margin: { top: 60 },
+                addPageContent: function () {
+                    doc.text("proveedores", 40, 30);
+                },
+            });
+            doc.save("Usuarios.pdf");
+        }, */
 
 
     },
 
 }
 </script>
-    <style scoped>
-.crud-title{
-    background-color:#1A237E;
+<style scoped>
+.crud-title {
+    background-color: #1A237E;
     color: white;
 }
-.headers{
-    color:#1A237E;
+
+.headers {
+    color: #1A237E;
 }
-
-
-
 </style>

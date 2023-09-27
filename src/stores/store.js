@@ -3,7 +3,27 @@ import { createStore } from "vuex";
 export const store = createStore({
     state(){
         return{
-        usuario:"Y2K"
+        usuario:"",
+        rol:"View",
     }
-    }
-})
+    },
+
+    getters: {
+        getMessage(state){
+          return state.usuario
+        }
+      },
+    
+    mutations:{
+        changeMessageValue(state, usuario){
+          state.usuario = usuario
+        },
+      },
+    
+    actions:{
+        changeMessageValue(context, usuario){
+          context.commit('changeMessageValue', usuario)
+        }
+      }
+
+    })

@@ -1,8 +1,7 @@
 <template>
   <div>
-
     <v-card
-      class="mx-auto pa-12 pb-8"
+      class="mx-auto pa-12 pb-8 form_login" 
       elevation="8"
       max-width="448"
       rounded="lg"
@@ -81,9 +80,6 @@ const showAlert = ref(false);
 const userStore = useUserStore(); */
 
 
-
-
-
 export default {
   data() {
     return {
@@ -91,14 +87,13 @@ export default {
       password: '',
       errorMessage: '',
       showAlert: showAlert.value,
-      
 
     };
   },
 
   methods: {
     
-   
+
     async validarUser() {
       
       //vuelvo vacia la bariable mensaje error
@@ -114,8 +109,6 @@ export default {
 
         if (!querySnapshot.empty) {
           console.log('Usuario autenticado');
-          //Si es correcto lo lleva a Home
-          this.$router.push({ name: 'ViewHome' });
 
 
           const fechaActual = new Date().toLocaleDateString(); //Fecha actual
@@ -127,8 +120,14 @@ export default {
           const nombreUsuario = usuarioDoc.data().nombre;
           const rolUsuario = usuarioDoc.data().rol;
           console.log('Nombre del usuario logueado:', nombreUsuario, ' su rol es ', rolUsuario);   
-          this.$store.state.usuario = nombreUsuario      
+          //vuex
+          this.$store.state.usuario = nombreUsuario ; 
+          this.$store.state.rol = rolUsuario; 
+          this.$store.state.fechaActual = fechaActual ; 
+    
 
+          //Si es correcto lo lleva a Home
+          this.$router.push({ name: 'ViewHome' }); 
   
         } else {
           // No se encontró un usuario con los datos ingresados, mostrar un mensaje de error.
@@ -148,11 +147,11 @@ export default {
 
 
   },
+  
 
 };
+
 </script>
-
-
 
 
 <style scoped>
@@ -165,6 +164,10 @@ export default {
 .mb-8:hover{
   background: #2503e4;
   color:white;
+}
+
+.form_login{
+  margin-top:8%;
 }
 
 </style>

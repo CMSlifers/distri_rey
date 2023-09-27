@@ -1,16 +1,15 @@
 <template>
     <v-container>
-        <h1>Clientes</h1>
         <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1">
             <template v-slot:top>
                 <v-toolbar class="crud-title" flat>
-                    <v-toolbar-title>My CRUD</v-toolbar-title>
+                    <v-toolbar-title>Clientes</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ props }">
                             <v-btn ccolor="white" dark class="mb-2" v-bind="props">
-                                New Item
+                                Nuevo Cliente
                             </v-btn>
                         </template>
                         <v-card>
@@ -32,9 +31,6 @@
                                             <v-text-field v-model="editedItem.nombre" label="nombre"></v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.direccion" label="direccion"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="4">
                                             <v-text-field v-model="editedItem.email" label="email"></v-text-field>
                                         </v-col>
                                         <v-col>
@@ -42,22 +38,58 @@
                                         </v-col>
                                     </v-row>
                                 </v-container>
+                                
+                <v-container>
+                  <p>Direccion:</p>
+                  <v-row>
+
+                    <v-col cols="12" sm="6" md="8">
+                      <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
+                        v-model="editedItem.departamento" clearable label="Departamento" :items="itemsDeps"
+                        item-title="departamento">
+                      </v-combobox>
+                    </v-col>
+
+                    <v-col cols="12" sm="6" md="4">
+                      <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
+                        v-model="editedItem.via" label="Tipo de Vía" :items="itemsVia" item-title="tipo">
+                      </v-combobox>
+                    </v-col>
+
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field v-model="editedItem.vianum1" label="Segun tipo de via"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field v-model="editedItem.vianum2" label="#"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" sm="6" md="4">
+                      <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
+                    </v-col>
+
+                    <!--                     <v-col cols="12" sm="6" md="8">
+                      <v-combobox auto-select-first="exact" return-object clearable label="Ciudad" :items="itemsDeps"
+                        item-title="ciudades">
+                      </v-combobox>
+                    </v-col>
+ -->
+                  </v-row>
+                </v-container>
                             </v-card-text>
 
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
-                                    Cancel
+                                    Cancelar
                                 </v-btn>
                                 <v-btn color="blue-darken-1" variant="text" @click="save">
-                                    Añadir Nuevo Proveedor
+                                    Añadir Nuevo
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
                     <v-dialog v-model="dialogDelete" max-width="500px">
                         <v-card>
-                            <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
+                            <v-card-title class="text-h6">¿Está seguro que desea eliminar este Cliente?</v-card-title>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
@@ -69,10 +101,10 @@
                 </v-toolbar>
             </template>
             <template v-slot:[`item.actions`]="{ item }">
-                <v-icon size="small" class="me-2" @click="editItem(item.raw)">
+                <v-icon size="small" class="me-2" color="primary" @click="editItem(item.raw)">
                     mdi-pencil
                 </v-icon>
-                <v-icon size="small" @click="deleteItem(item.raw)">
+                <v-icon size="small" color="red" @click="deleteItem(item.raw)">
                     mdi-delete
                 </v-icon>
             </template>
@@ -90,9 +122,29 @@
 
 import db from '../firebase/init.js'
 import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore'
+import { colombiaJS } from "/colombia.js";
+
 
 export default {
     data: () => ({
+        rules: {
+            required: value => !!value || 'Field is required',
+        },
+
+        itemsDeps: colombiaJS,
+        itemsVia: [
+            { id: 0, tipo: "Anillo" },
+            { id: 1, tipo: "Autopista" },
+            { id: 2, tipo: "Avenida" },
+            { id: 3, tipo: "Avenida Calle" },
+            { id: 4, tipo: "Avenida Carrera" },
+            { id: 5, tipo: "Calle" },
+            { id: 6, tipo: "Carrera" },
+            { id: 7, tipo: "Circular" },
+            { id: 8, tipo: "Diagonal" },
+            { id: 0, tipo: "Transversal" }
+        ],
+
         dialog: false,
         dialogDelete: false,
         headers: [
@@ -105,9 +157,9 @@ export default {
             { title: 'Id', key: 'id' },
             { title: 'Dni', key: 'dni' },
             { title: 'Nombre', key: 'nombre' },
-            { title: 'Direccion', key: 'direccion' },
             { title: 'Email', key: 'email' },
-            { title: 'Telefono', key: 'Telefono' },
+            { title: 'Telefono', key: 'telefono' },
+            { title: 'Direccion', key: 'direccion' },
             { title: 'Actions', key: 'actions', sortable: false },
         ],
         desserts: [],
@@ -118,24 +170,34 @@ export default {
             id: 0,
             dni: 0,
             nombre: 0,
-            direccion: 0,
             email: 0,
             telefono: 0,
+            via: 0,
+            vianum1: 0,
+            vianum2: 0,
+            vianum3: 0,
+            departamento: 0,
+            direccion: 0,
         },
         defaultItem: {
             name: '',
             id: 0,
             dni: 0,
             nombre: 0,
-            direccion: 0,
             email: 0,
             telefono: 0,
+            via: 0,
+            vianum1: 0,
+            vianum2: 0,
+            vianum3: 0,
+            departamento: 0,
+            direccion: 0,
         },
     }),
 
     computed: {
         formTitle() {
-            return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+            return this.editedIndex === -1 ? 'Nuevo Cliente' : 'Editar Cliente'
         },
     },
 
@@ -177,7 +239,13 @@ export default {
                 nombre: this.editedItem.nombre,
                 telefono: this.editedItem.telefono,
                 email: this.editedItem.email,
-                direccion: this.editedItem.direccion,
+                via: this.editedItem.via,
+                vianum1: this.editedItem.vianum1,
+                vianum2: this.editedItem.vianum2,
+                vianum3: this.editedItem.vianum3,
+                departamento: this.editedItem.departamento,
+                direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
+
 
             })
 
@@ -192,9 +260,16 @@ export default {
                 id: this.editedItem.id,
                 dni: this.editedItem.dni,
                 nombre: this.editedItem.nombre,
-                direccion: this.editedItem.direccion,
                 telefono: this.editedItem.telefono,
                 email: this.editedItem.email,
+                via: this.editedItem.via,
+                vianum1: this.editedItem.vianum1,
+                vianum2: this.editedItem.vianum2,
+                vianum3: this.editedItem.vianum3,
+                departamento: this.editedItem.departamento.departamento,
+                direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
+
+
             }
             const docRef = await addDoc(colRef, dataObj);
             console.log("Creo el dni con nombre", docRef.id);
@@ -215,9 +290,14 @@ export default {
                     id: doc.data().id,
                     dni: doc.data().dni,
                     nombre: doc.data().nombre,
-                    direccion: doc.data().direccion,
                     email: doc.data().email,
                     telefono: doc.data().telefono,
+                    direccion: doc.data().direccion,
+                    departamento: doc.data().departamento,
+                    via: doc.data().via,
+                    vianum1: doc.data().vianum1,
+                    vianum2: doc.data().vianum2,
+                    vianum3: doc.data().vianum3,
 
                 })
 
@@ -284,7 +364,9 @@ export default {
         save() {
             if (this.editedIndex > -1) {
                 Object.assign(this.desserts[this.editedIndex], this.editedItem);
-                this.actualizarDatos()
+                this.actualizarDatos();
+                this.limpiarCrud();
+                this.listarDatos();
             } else {
                 this.desserts.push(this.editedItem)
                 this.crearRegistros();
@@ -301,11 +383,8 @@ export default {
 }
 </script>
 <style scoped>
-.crud-title{
-    background-color:#1A237E;
+.crud-title {
+    background-color: #1A237E;
     color: white;
 }
-
-
-
 </style>

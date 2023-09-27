@@ -84,14 +84,12 @@
  -->
                   </v-row>
                 </v-container>
-
-
               </v-card-text>
 
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue-darken-1" variant="text" @click="close">
-                  Cancel
+                  Cancelar
                 </v-btn>
                 <v-btn color="blue-darken-1" variant="text" @click="save">
                   Añadir Nuevo Usuario
@@ -101,10 +99,10 @@
           </v-dialog>
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
-              <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
+              <v-card-title class="text-h5">¿Seguro que desea eliminar este Usuario?</v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
+                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancelar</v-btn>
                 <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
                 <v-spacer></v-spacer>
               </v-card-actions>
@@ -113,10 +111,10 @@
         </v-toolbar>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon size="small" class="me-2" @click="editItem(item.raw)">
+        <v-icon size="small" color="primary" class="me-2" @click="editItem(item.raw)">
           mdi-pencil
         </v-icon>
-        <v-icon size="small" @click="deleteItem(item.raw)">
+        <v-icon size="small" color="red" @click="deleteItem(item.raw)">
           mdi-delete
         </v-icon>
       </template>
@@ -221,7 +219,7 @@ export default {
 
   computed: {
     formTitle() {
-      return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+      return this.editedIndex === -1 ? 'Nuevo Usuario' : 'Editar Usuario'
     },
   },
 
