@@ -1,14 +1,14 @@
 <template>
   <v-container>
     <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1">
-      <template  v-slot:top>
+      <template v-slot:top>
         <v-toolbar class="crud-title" flat>
           <v-toolbar-title>Usuarios</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ props }">
-              <v-btn color="white" dark class="mb-2" v-bind="props">
+              <v-btn @click="llamarContador()" color="white" dark class="mb-2" v-bind="props">
                 Crear Usuario
               </v-btn>
             </template>
@@ -24,9 +24,9 @@
                 <v-container>
                   <v-row>
 
-                    <v-col cols="12" sm="6" md="4">
+                    <!--  <v-col cols="12" sm="6" md="4">
                       <v-text-field v-model="editedItem.id" label="id"></v-text-field>
-                    </v-col>
+                    </v-col> -->
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field v-model="editedItem.dni" label="dni"></v-text-field>
                     </v-col>
@@ -41,8 +41,11 @@
                       <v-text-field v-model="editedItem.email" label="email"></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.rol" label="rol"></v-text-field>
+                      <v-select v-model="editedItem.rol" :items="['ADMIN', 'VENDEDOR']" label="rol"></v-select>
                     </v-col>
+                    <!-- <v-col cols="12" sm="6" md="4">
+                      <v-text-field v-model="editedItem.rol" label="rol"></v-text-field>
+                    </v-col> -->
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field v-model="editedItem.password" label="password"></v-text-field>
                     </v-col>
@@ -76,12 +79,6 @@
                       <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
                     </v-col>
 
-                    <!--                     <v-col cols="12" sm="6" md="8">
-                      <v-combobox auto-select-first="exact" return-object clearable label="Ciudad" :items="itemsDeps"
-                        item-title="ciudades">
-                      </v-combobox>
-                    </v-col>
- -->
                   </v-row>
                 </v-container>
               </v-card-text>
@@ -138,11 +135,17 @@ export default {
 
 
   data: () => ({
+    contadorUsuarios: {
+      contador: 0,
+      contadorid: 0
+    },
+
     rules: {
       required: value => !!value || 'Field is required',
     },
 
     itemsDeps: colombiaJS,
+
     itemsVia: [
       { id: 0, tipo: "Anillo" },
       { id: 1, tipo: "Autopista" },
@@ -159,6 +162,7 @@ export default {
     dialog: false,
 
     dialogDelete: false,
+
     headers: [
       {
         /* title: 'Dessert (100g serving)' */
@@ -177,7 +181,9 @@ export default {
       { title: 'Actions', key: 'actions', sortable: false },
     ],
     desserts: [],
+
     editedIndex: -1,
+
     /*Aqui se deben cambiar los datos dependiendo el componente*/
     editedItem: {
       keyid: '',
@@ -195,6 +201,7 @@ export default {
       departamento: 0,
       direccion: 0,
     },
+
     defaultItem: {
       name: '',
       id: 0,
@@ -211,10 +218,7 @@ export default {
       departamento: 0,
       direccion: 0,
     },
-
-
   }),
-
 
 
   computed: {
@@ -224,13 +228,66 @@ export default {
   },
 
 
-
   created() {
     this.listarDatos()
   },
 
   methods: {
 
+    //Mediante esta función podemos llamar y guardar los datos del contador en nuestro objeto 
+    async llamarContador() {
+      const contadorColRef = collection(db, 'contadores');
+      const queryContador = query(contadorColRef);
+      const datosContador = await getDocs(queryContador);
+      datosContador.forEach((doc) => {
+        this.contadorUsuarios.contadorid = doc.id;
+        this.contadorUsuarios.contador = doc.data().contadorUsuarios;
+      })
+    },
+
+    //Esta función nos permite aumentar el contador 
+    incrementarContador() {
+      this.contadorUsuarios.contador++;
+      this.actualizarContador()
+    },
+
+    //Esta función permite actualizar el valor del contador en la base de datos
+    async actualizarContador() {
+      const Ref = doc(db, "contadores", this.contadorUsuarios.contadorid);
+      await updateDoc(Ref, {
+        contadorUsuarios: this.contadorUsuarios.contador
+      })
+
+    },
+
+    /*Este es le metodo que nos permite agregar nuevos datos a firebase*/
+    async crearRegistros() {
+      const colRef = collection(db, 'usuarios')
+      console.log(this.editedItem.name, this.editedItem.id, this.editedItem.usuario, this.editedItem.nombre, this.editedItem.password,)
+      const dataObj = {
+        id: this.contadorUsuarios.contador,
+        dni: this.editedItem.dni,
+        nombre: this.editedItem.nombre,
+        usuario: this.editedItem.usuario,
+        email: this.editedItem.email,
+        rol: this.editedItem.rol,
+        via: this.editedItem.via.tipo,
+        vianum1: this.editedItem.vianum1,
+        vianum2: this.editedItem.vianum2,
+        vianum3: this.editedItem.vianum3,
+        password: this.editedItem.password,
+        departamento: this.editedItem.departamento.departamento,
+        direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
+      }
+      const docRef = await addDoc(colRef, dataObj);
+      console.log("Creo el usuario con nombre", docRef.id);
+      this.incrementarContador();
+    },
+
+    /*Este metodo Limpia la grilla tan pronto se crea un nuevo usuario para evitar errores*/
+    async limpiarCrud() {
+      this.desserts = []
+    },
 
     /*Este metodo Elimina un documento de la base de datos guiandose por el id*/
     async eliminarDocumentos() {
@@ -238,42 +295,6 @@ export default {
 
     },
 
-    /*Este metodo Limpia la grilla tan pronto se crea un nuevo usuario para evitar errores*/
-    async limpiarCrud() {
-
-      this.desserts = []
-
-    }
-    ,
-
-    /*Este es le metodo que nos permite agregar nuevos datos a firebase*/
-
-    async crearRegistros() {
-      const colRef = collection(db, 'usuarios')
-      console.log(this.editedItem.name, this.editedItem.id, this.editedItem.usuario, this.editedItem.nombre, this.editedItem.password,)
-
-      const dataObj = {
-        id: this.editedItem.id,
-        dni: this.editedItem.dni,
-        nombre: this.editedItem.nombre,
-        usuario: this.editedItem.usuario,
-        email: this.editedItem.email,
-        rol: this.editedItem.rol,
-        via: this.editedItem.via,
-        vianum1: this.editedItem.vianum1,
-        vianum2: this.editedItem.vianum2,
-        vianum3: this.editedItem.vianum3,
-        password: this.editedItem.password,
-        departamento: this.editedItem.departamento.departamento,
-        direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # '+this.editedItem.vianum2 + ' - '+this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
-
-
-
-      }
-      const docRef = await addDoc(colRef, dataObj);
-      console.log("Creo el usuario con nombre", docRef.id);
-
-    },
     /*Este metodo nos permite actualizar los datos en la base de datos */
     async actualizarDatos() {
       console.log(this.editedItem.keyid)
@@ -290,15 +311,11 @@ export default {
         vianum2: this.editedItem.vianum2,
         vianum3: this.editedItem.vianum3,
         departamento: this.editedItem.departamento,
-        direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # '+this.editedItem.vianum2 + ' - '+this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
-
-
+        direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
       })
-
     },
 
     /* Con este metodo podemos mostrar los datos en la grilla trayendolos de la base de datos*/
-
     async listarDatos() {
 
       const q = query(collection(db, "usuarios"));
@@ -338,12 +355,7 @@ export default {
                   password: "olis",
                 },
                 {
-        
-                  id: 3,
-                  usuario: "YK2",
-                  nombre: "Carlos Jimenez",
-                  password: "12345",
-                }, */
+        */
       ]
     },
 
@@ -351,14 +363,12 @@ export default {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true;
-
     },
 
     deleteItem(item) {
       this.editedIndex = this.desserts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true;
-
     },
 
     deleteItemConfirm() {
@@ -392,6 +402,7 @@ export default {
       } else {
         this.desserts.push(this.editedItem)
         this.crearRegistros();
+
         this.limpiarCrud();
         this.listarDatos();
       }
@@ -406,7 +417,8 @@ export default {
 </script>
     
 <style scoped>
-.crud-title{
-    background-color:#1A237E;
-    color: white;
-}</style>
+.crud-title {
+  background-color: #1A237E;
+  color: white;
+}
+</style>

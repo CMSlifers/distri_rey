@@ -1,6 +1,6 @@
 <template>
     <v-container>
-   
+
         <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1">
             <template v-slot:top>
                 <v-toolbar class="crud-title" flat>
@@ -9,7 +9,7 @@
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ props }">
-                            <v-btn color="white" dark class="mb-2" v-bind="props">
+                            <v-btn @click="llamarContador" color="white" dark class="mb-2" v-bind="props">
                                 Nueva Categoria
                             </v-btn>
                         </template>
@@ -22,10 +22,7 @@
                                 <v-container>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.id" label="id"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="4">
+                                        <v-col cols="12" sm="12" md="12">
                                             <v-text-field v-model="editedItem.categoria" label="categoria"></v-text-field>
                                         </v-col>
                                     </v-row>
@@ -37,7 +34,7 @@
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
                                     Cancelar
                                 </v-btn>
-                                <v-btn color="blue-darken-1"  variant="text" @click="save">
+                                <v-btn color="blue-darken-1" variant="text" @click="save">
                                     Añadir Nueva Categoria
                                 </v-btn>
                             </v-card-actions>
@@ -81,8 +78,12 @@ import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'f
 
 export default {
     data: () => ({
+        contadorCategorias: [],
+
         dialog: false,
+
         dialogDelete: false,
+
         headers: [
             {
                 /* title: 'Dessert (100g serving)' */
@@ -135,66 +136,74 @@ export default {
 
     methods: {
 
-        /*Este metodo Elimina un documento de la base de datos guiandose por el id*/
-        async eliminarDocumentos() {
-            await deleteDoc(doc(db, "categoria", this.editedItem.keyid));
+        //Mediante esta función podemos llamar y guardar los datos del contador en nuestro objeto 
+        async llamarContador() {
+            const contadorColRef = collection(db, 'contadores');
+            const queryContador = query(contadorColRef);
+            const datosContador = getDocs(queryContador);
+            (await datosContador).forEach((doc) => {
+                this.contadorCategorias.contadorid = doc.id,
+                    this.contadorCategorias.contador = doc.data().contadorCategorias
+            })
+        },
 
+        //Esta función nos permite aumentar el contador 
+        incrementarContador() {
+            this.contadorCategorias.contador++;
+            this.actualizarContador();
+        },
+
+        //Esta función permite actualizar el valor del contador en la base de datos
+        async actualizarContador() {
+            const Ref = doc(db, 'contadores', this.contadorCategorias.contadorid);
+            await updateDoc(Ref, {
+                contadorCategorias: this.contadorCategorias.contador
+            })
+        },
+
+        /*Este es le metodo que nos permite agregar nuevos datos a firebase*/
+        async crearRegistros() {
+            const colRef = collection(db, 'categoria')
+            console.log(this.editedItem.name, this.editedItem.id, this.editedItem.categoria)
+            const dataObj = {
+                id: this.contadorCategorias.contador,
+                categoria: this.editedItem.categoria,
+            }
+            await addDoc(colRef, dataObj);
+            this.incrementarContador();
         },
 
         /*Este metodo Limpia la grilla tan pronto se crea un nuevo categoria para evitar errores*/
         async limpiarCrud() {
-
             this.desserts = []
+        },
 
-        }
-        ,
+        /*Este metodo Elimina un documento de la base de datos guiandose por el id*/
+        async eliminarDocumentos() {
+            await deleteDoc(doc(db, "categoria", this.editedItem.keyid));
+        },
+
         /*Este metodo nos permite actualizar los datos en la base de datos */
         async actualizarDatos() {
             console.log(this.editedItem.keyid)
             const Ref = doc(db, "categoria", this.editedItem.keyid);
             await updateDoc(Ref, {
                 categoria: this.editedItem.categoria,
-
-
             })
-
-        },
-
-        /*Este es le metodo que nos permite agregar nuevos datos a firebase*/
-
-        async crearRegistros() {
-            const colRef = collection(db, 'categoria')
-            console.log(this.editedItem.name, this.editedItem.id, this.editedItem.categoria)
-            const dataObj = {
-                id: this.editedItem.id,
-                categoria: this.editedItem.categoria,
-            }
-            const docRef = await addDoc(colRef, dataObj);
-            console.log("Creo el categoria con nombre", docRef.id);
-
         },
 
         /* Con este metodo podemos mostrar los datos en la grilla trayendolos de la base de datos*/
-
         async listarDatos() {
-
             const q = query(collection(db, "categoria"));
             const resul = await getDocs(q);
             resul.forEach((doc) => {
-
-                console.log("id", doc.id);
                 this.desserts.push({
                     keyid: doc.id,
                     id: doc.data().id,
                     categoria: doc.data().categoria,
-
-
                 })
-
             })
-
         },
-
 
         initialize() {
             this.desserts = [
@@ -204,12 +213,8 @@ export default {
                           categoria: "SaToPi",
 
                         },
-                        {
                 
-                          id: 3,
-                          categoria: "YK2",
-
-                        }, */
+                 */
             ]
         },
 
@@ -217,14 +222,12 @@ export default {
             this.editedIndex = this.desserts.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true;
-
         },
 
         deleteItem(item) {
             this.editedIndex = this.desserts.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialogDelete = true;
-
         },
 
         deleteItemConfirm() {
@@ -253,6 +256,8 @@ export default {
             if (this.editedIndex > -1) {
                 Object.assign(this.desserts[this.editedIndex], this.editedItem);
                 this.actualizarDatos()
+                this.limpiarCrud();
+                this.listarDatos();
             } else {
                 this.desserts.push(this.editedItem)
                 this.crearRegistros();
@@ -270,10 +275,9 @@ export default {
 </script>
 
 <style scoped>
-.crud-title{
-background-color:#1A237E;
-color: white;
+.crud-title {
+    background-color: #1A237E;
+    color: white;
 }
-
 </style>
     

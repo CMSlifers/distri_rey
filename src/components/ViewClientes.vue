@@ -8,7 +8,7 @@
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ props }">
-                            <v-btn ccolor="white" dark class="mb-2" v-bind="props">
+                            <v-btn @click="llamarContador" ccolor="white" dark class="mb-2" v-bind="props">
                                 Nuevo Cliente
                             </v-btn>
                         </template>
@@ -21,9 +21,6 @@
                                 <v-container>
                                     <v-row>
 
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.id" label="id"></v-text-field>
-                                        </v-col>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field v-model="editedItem.dni" label="dni"></v-text-field>
                                         </v-col>
@@ -38,42 +35,44 @@
                                         </v-col>
                                     </v-row>
                                 </v-container>
-                                
-                <v-container>
-                  <p>Direccion:</p>
-                  <v-row>
 
-                    <v-col cols="12" sm="6" md="8">
-                      <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
-                        v-model="editedItem.departamento" clearable label="Departamento" :items="itemsDeps"
-                        item-title="departamento">
-                      </v-combobox>
-                    </v-col>
+                                <v-container>
+                                    <p>Direccion:</p>
+                                    <v-row>
 
-                    <v-col cols="12" sm="6" md="4">
-                      <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
-                        v-model="editedItem.via" label="Tipo de Vía" :items="itemsVia" item-title="tipo">
-                      </v-combobox>
-                    </v-col>
+                                        <v-col cols="12" sm="6" md="8">
+                                            <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
+                                                v-model="editedItem.departamento" clearable label="Departamento"
+                                                :items="itemsDeps" item-title="departamento">
+                                            </v-combobox>
+                                        </v-col>
 
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.vianum1" label="Segun tipo de via"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.vianum2" label="#"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
-                    </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
+                                                v-model="editedItem.via" label="Tipo de Vía" :items="itemsVia"
+                                                item-title="tipo">
+                                            </v-combobox>
+                                        </v-col>
 
-                    <!--                     <v-col cols="12" sm="6" md="8">
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-text-field v-model="editedItem.vianum1"
+                                                label="Segun tipo de via"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-text-field v-model="editedItem.vianum2" label="#"></v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
+                                        </v-col>
+
+                                        <!--                     <v-col cols="12" sm="6" md="8">
                       <v-combobox auto-select-first="exact" return-object clearable label="Ciudad" :items="itemsDeps"
                         item-title="ciudades">
                       </v-combobox>
                     </v-col>
  -->
-                  </v-row>
-                </v-container>
+                                    </v-row>
+                                </v-container>
                             </v-card-text>
 
                             <v-card-actions>
@@ -127,6 +126,8 @@ import { colombiaJS } from "/colombia.js";
 
 export default {
     data: () => ({
+        contadorClientes:[],
+        
         rules: {
             required: value => !!value || 'Field is required',
         },
@@ -218,19 +219,62 @@ export default {
 
     methods: {
 
+        //Mediante esta función podemos llamar y guardar los datos del contador en nuestro objeto 
+        async llamarContador() {
+            const contadorColRef = collection(db, 'contadores');
+            const queryContador = query(contadorColRef);
+            const datosContador = await getDocs(queryContador);
+            datosContador.forEach((doc) => {
+                this.contadorClientes.contadorid = doc.id;
+                this.contadorClientes.contador = doc.data().contadorClientes;
+                console.log("Contador", this.contadorClientes.contador)
+            })
+        },
+
+        //Esta función nos permite aumentar el contador 
+        incrementarContador() {
+            this.contadorClientes.contador++;
+            this.actualizarContador()
+        },
+
+        //Esta función permite actualizar el valor del contador en la base de datos
+        async actualizarContador() {
+            const Ref = doc(db, "contadores", this.contadorClientes.contadorid);
+            await updateDoc(Ref, {
+                contadorClientes: this.contadorClientes.contador
+            })
+        },
+
+        /*Este es le metodo que nos permite agregar nuevos datos a firebase*/
+        async crearRegistros() {
+            const colRef = collection(db, 'clientes')
+            const dataObj = {
+                id: this.contadorClientes.contador,
+                dni: this.editedItem.dni,
+                nombre: this.editedItem.nombre,
+                telefono: this.editedItem.telefono,
+                email: this.editedItem.email,
+                via: this.editedItem.via.tipo,
+                vianum1: this.editedItem.vianum1,
+                vianum2: this.editedItem.vianum2,
+                vianum3: this.editedItem.vianum3,
+                departamento: this.editedItem.departamento.departamento,
+                direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
+            }
+            await addDoc(colRef, dataObj);
+            this.incrementarContador();
+        },
+
+        /*Este metodo Limpia la grilla tan pronto se crea un nuevo registro para evitar errores*/
+        async limpiarCrud() {
+            this.desserts = []
+        },
+
         /*Este metodo Elimina un documento de la base de datos guiandose por el id*/
         async eliminarDocumentos() {
             await deleteDoc(doc(db, "clientes", this.editedItem.keyid));
-
         },
 
-        /*Este metodo Limpia la grilla tan pronto se crea un nuevo dni para evitar errores*/
-        async limpiarCrud() {
-
-            this.desserts = []
-
-        }
-        ,
         /*Este metodo nos permite actualizar los datos en la base de datos */
         async actualizarDatos() {
             console.log(this.editedItem.keyid)
@@ -245,39 +289,11 @@ export default {
                 vianum3: this.editedItem.vianum3,
                 departamento: this.editedItem.departamento,
                 direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
-
-
             })
-
         },
 
-        /*Este es le metodo que nos permite agregar nuevos datos a firebase*/
-
-        async crearRegistros() {
-            const colRef = collection(db, 'clientes')
-            console.log(this.editedItem.name, this.editedItem.id, this.editedItem.dni, this.editedItem.nombre, this.editedItem.direccion,)
-            const dataObj = {
-                id: this.editedItem.id,
-                dni: this.editedItem.dni,
-                nombre: this.editedItem.nombre,
-                telefono: this.editedItem.telefono,
-                email: this.editedItem.email,
-                via: this.editedItem.via,
-                vianum1: this.editedItem.vianum1,
-                vianum2: this.editedItem.vianum2,
-                vianum3: this.editedItem.vianum3,
-                departamento: this.editedItem.departamento.departamento,
-                direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
-
-
-            }
-            const docRef = await addDoc(colRef, dataObj);
-            console.log("Creo el dni con nombre", docRef.id);
-
-        },
 
         /* Con este metodo podemos mostrar los datos en la grilla trayendolos de la base de datos*/
-
         async listarDatos() {
 
             const q = query(collection(db, "clientes"));
@@ -298,13 +314,9 @@ export default {
                     vianum1: doc.data().vianum1,
                     vianum2: doc.data().vianum2,
                     vianum3: doc.data().vianum3,
-
                 })
-
             })
-
         },
-
 
         initialize() {
             this.desserts = [
@@ -315,13 +327,7 @@ export default {
                           nombre: 24,
                           direccion: "olis",
                         },
-                        {
-                
-                          id: 3,
-                          dni: "YK2",
-                          nombre: "Carlos Jimenez",
-                          direccion: "12345",
-                        }, */
+                */
             ]
         },
 
@@ -329,14 +335,12 @@ export default {
             this.editedIndex = this.desserts.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true;
-
         },
 
         deleteItem(item) {
             this.editedIndex = this.desserts.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialogDelete = true;
-
         },
 
         deleteItemConfirm() {
