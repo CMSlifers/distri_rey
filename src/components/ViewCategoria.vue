@@ -19,14 +19,17 @@
                             </v-card-title>
 
                             <v-card-text>
-                                <v-container>
-                                    <v-row>
+                                <v-form lazy-validation v-model="valid" ref="form">
+                                    <v-container>
+                                        <v-row>
 
-                                        <v-col cols="12" sm="12" md="12">
-                                            <v-text-field v-model="editedItem.categoria" label="categoria"></v-text-field>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
+                                            <v-col cols="12" sm="12" md="12">
+                                                <v-text-field :rules="[v => !!v || 'Seleccione una categoria']" required
+                                                    v-model="editedItem.categoria" label="categoria" ></v-text-field>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
+                                </v-form>
                             </v-card-text>
 
                             <v-card-actions>
@@ -34,7 +37,7 @@
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
                                     Cancelar
                                 </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="save">
+                                <v-btn color="blue-darken-1" variant="text" :disabled="!valid" @click="validate">
                                     Añadir Nueva Categoria
                                 </v-btn>
                             </v-card-actions>
@@ -78,6 +81,8 @@ import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'f
 
 export default {
     data: () => ({
+        valid: true,
+
         contadorCategorias: [],
 
         dialog: false,
@@ -135,6 +140,14 @@ export default {
     },
 
     methods: {
+
+        //Esta funcion permite mostrar el boton si los campos requeridos estan completos
+        validate() {
+            if (this.$refs.form.validate()) {
+                this.snackbar = true
+            }
+            this.save();
+        },
 
         //Mediante esta función podemos llamar y guardar los datos del contador en nuestro objeto 
         async llamarContador() {
@@ -259,7 +272,7 @@ export default {
                 this.limpiarCrud();
                 this.listarDatos();
             } else {
-                this.desserts.push(this.editedItem)
+                this.desserts.push(this.editedItem)     
                 this.crearRegistros();
                 this.limpiarCrud();
                 this.listarDatos();

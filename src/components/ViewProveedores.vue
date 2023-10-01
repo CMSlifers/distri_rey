@@ -22,64 +22,67 @@
                             </v-card-title>
 
                             <v-card-text>
-                                <v-container>
-                                    <v-row>
+                                <v-form ref="form" v-model="valid" lazy-validation>
+                                    <v-container>
+                                        <v-row>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-text-field v-model="editedItem.nit" label="NIT" required
+                                                    :rules="nitRules" ></v-text-field>
+                                            </v-col>
+                                            <v-col>
+                                                <v-text-field v-model="editedItem.telefono" label="telefono"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-text-field v-model="editedItem.nombre" label="nombre"></v-text-field>
+                                            </v-col>
 
-                                        <!--                                         <v-col cols="12" sm="6" md="3">
-                                            <v-text-field v-model="editedItem.id" label="id"></v-text-field>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-text-field v-model="editedItem.email" label="email"></v-text-field>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
+                                    <v-container>
+                                        <p>Direccion:</p>
+                                        <v-row>
+
+                                            <v-col cols="12" sm="10" md="12">
+                                                <v-combobox required :rules="[v => !!v || 'Seleccione un departamento']"
+                                                    return-object auto-select-first="exact"
+                                                    v-model="editedItem.departamento" clearable label="Departamento"
+                                                    :items="colombiaJS" item-title="departamento">
+                                                </v-combobox>
+                                            </v-col>
+                                            <!--                                         <v-col cols="12" sm="10" md="8">
+                                            <v-combobox auto-select-first="exact" return-object clearable v-model="editedItem.ciudad" label="Ciudad"
+                                                :items="colombiaNuevo" item-title="ciudades">
+                                            </v-combobox>
                                         </v-col> -->
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.nit" label="NIT"></v-text-field>
-                                        </v-col>
-                                        <v-col>
-                                            <v-text-field v-model="editedItem.telefono" label="telefono"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="editedItem.nombre" label="nombre"></v-text-field>
-                                        </v-col>
 
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="editedItem.email" label="email"></v-text-field>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
-                                <v-container>
-                                    <p>Direccion:</p>
-                                    <v-row>
+                                            <v-col cols="12" sm="5" md="12">
+                                                <v-combobox
+                                                    :rules="[v => !!v || 'Seleccione el tipo de vía de su dirección']"
+                                                    required return-object auto-select-first="exact"
+                                                    v-model="editedItem.via" label="Tipo de Vía" :items="itemsVia"
+                                                    item-title="tipo">
+                                                </v-combobox>
+                                            </v-col>
 
-                                        <v-col cols="12" sm="7" md="8">
-                                            <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
-                                                v-model="editedItem.departamento" clearable label="Departamento"
-                                                :items="itemsDeps" item-title="departamento">
-                                            </v-combobox>
-                                        </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.vianum1"
+                                                    label="Segun tipo de via"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.vianum2" label="#"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
+                                            </v-col>
 
-                                        <v-col cols="12" sm="5" md="4">
-                                            <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
-                                                v-model="editedItem.via" label="Tipo de Vía" :items="itemsVia"
-                                                item-title="tipo">
-                                            </v-combobox>
-                                        </v-col>
 
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.vianum1"
-                                                label="Segun tipo de via"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.vianum2" label="#"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
-                                        </v-col>
 
-                                        <!--                     <v-col cols="12" sm="6" md="8">
-                      <v-combobox auto-select-first="exact" return-object clearable label="Ciudad" :items="itemsDeps"
-                        item-title="ciudades">
-                      </v-combobox>
-                    </v-col>
- -->
-                                    </v-row>
-                                </v-container>
+                                        </v-row>
+                                    </v-container>
+                                </v-form>
                             </v-card-text>
 
                             <v-card-actions>
@@ -87,7 +90,7 @@
                                 <v-btn color="blue-darken-1" variant="text" @click="close">
                                     Cancelar
                                 </v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="save">
+                                <v-btn :disabled="!valid" @click="validate" color="blue-darken-1" variant="text">
                                     Añadir Nuevo Proveedor
                                 </v-btn>
                             </v-card-actions>
@@ -133,6 +136,17 @@ import { colombiaJS } from "/colombia.js";
 export default {
     data: () => ({
 
+        valid: true,
+
+        nitRules: [
+            v => !!v || 'Se requiere Identificación',
+            v => (v && v.length >= 7) || 'Debe tener más de 7 dígitos'
+        ],
+        emailRules: [
+            v => !!v || 'Se requiere e-mail',
+            v => /.+@.+/.test(v) || 'El e-mail debe ser válido'
+        ],
+
         contadorProveedores: {
             contador: 0,
             contadorid: 0,
@@ -142,7 +156,7 @@ export default {
             required: value => !!value || 'Field is required',
         },
 
-        itemsDeps: colombiaJS,
+        colombiaJS,
 
         itemsVia: [
             { id: 0, tipo: "Anillo" },
@@ -193,6 +207,7 @@ export default {
             vianum1: 0,
             vianum2: 0,
             vianum3: 0,
+            ciudad: 0,
             departamento: 0,
             direccion: 0,
         },
@@ -209,6 +224,7 @@ export default {
             vianum2: 0,
             vianum3: 0,
             departamento: 0,
+            ciudad: 0,
             direccion: 0,
         },
 
@@ -234,6 +250,13 @@ export default {
     },
 
     methods: {
+        //Esta funcion permite mostrar el boton si los campos requeridos estan completos
+        validate() {
+            if (this.$refs.form.validate()) {
+                this.snackbar = true
+            }
+            this.save();
+        },
 
         //Mediante esta función podemos llamar y guardar los datos del contador en nuestro objeto 
         async llamarContador() {
@@ -278,6 +301,7 @@ export default {
                 vianum2: this.editedItem.vianum2,
                 vianum3: this.editedItem.vianum3,
                 departamento: this.editedItem.departamento.departamento,
+                /*              ciudad: this.editedItem.ciudad.ciudad, */
                 direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
             }
             await addDoc(colRef, dataObj);
@@ -436,5 +460,4 @@ export default {
 
 .headers {
     color: #1A237E;
-}
-</style>
+}</style>

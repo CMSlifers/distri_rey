@@ -21,22 +21,23 @@
                 <ul>
 
                 </ul>
+                <v-form lazy-validation v-model="valid" ref="form">
                 <v-container>
                   <v-row>
                     <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.cod" label="Cod. Producto"></v-text-field>
+                      <v-text-field v-model="editedItem.cod" label="Cod. Producto" ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field v-model="editedItem.nombre" label="nombre Producto"></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
-                      <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
+                      <v-combobox :rules="[v => !!v || 'Seleccione una categoria']" required return-object auto-select-first="exact"
                         v-model="editedItem.catego" label="Categoria" :items="datosCategoria" item-title="categoria">
                       </v-combobox>
                     </v-col>
                   </v-row>
                 </v-container>
-
+              </v-form>
 
               </v-card-text>
 
@@ -45,8 +46,8 @@
                 <v-btn color="blue-darken-1" variant="text" @click="close">
                   Cancelar
                 </v-btn>
-                <v-btn color="blue-darken-1" variant="text" @click="save">
-                  Añadir Nuevo Usuario
+                <v-btn :disabled="!valid" @click="validate" color="blue-darken-1" variant="text">
+                  Añadir Nuevo Producto
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -89,8 +90,10 @@ import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'f
 
 export default {
 
-
   data: () => ({
+
+    valid:true,
+
     contadorProductos: {
       contador: 0,
       contadorid: 0
@@ -153,6 +156,13 @@ export default {
   },
 
   methods: {
+    //Esta funcion permite mostrar el boton si los campos requeridos estan completos
+    validate() {
+      if (this.$refs.form.validate()) {
+        this.snackbar = true
+      }
+      this.save();
+    },
 
     //Mediante esta función podemos llamar y guardar los datos del contador en nuestro objeto 
     async llamarContador() {

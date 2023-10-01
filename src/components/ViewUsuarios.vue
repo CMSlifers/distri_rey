@@ -21,66 +21,82 @@
                 <ul>
 
                 </ul>
-                <v-container>
-                  <v-row>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                  <v-container>
+                    <v-row>
 
-                    <!--  <v-col cols="12" sm="6" md="4">
+                      <!--  <v-col cols="12" sm="6" md="4">
                       <v-text-field v-model="editedItem.id" label="id"></v-text-field>
                     </v-col> -->
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.dni" label="dni"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.nombre" label="nombre"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.usuario" label="usuario"></v-text-field>
-                    </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field v-model="editedItem.identificacion" required :rules="dniRules"
+                          label="Identificación"></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field v-model="editedItem.nombre" label="Nombre"></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field v-model="editedItem.usuario" label="Usuario"></v-text-field>
+                      </v-col>
 
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.email" label="email"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-select v-model="editedItem.rol" :items="['ADMIN', 'VENDEDOR']" label="rol"></v-select>
-                    </v-col>
-                    <!-- <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.rol" label="rol"></v-text-field>
-                    </v-col> -->
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.password" label="password"></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field v-model="editedItem.email" :rules="emailRules" label="E-mail"
+                          required></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-select v-model="editedItem.rol" :items="['ADMIN', 'VENDEDOR']" label="Rol"></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field v-model="editedItem.password" label="password"></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
 
-                <v-container>
-                  <p>Direccion:</p>
-                  <v-row>
 
-                    <v-col cols="12" sm="6" md="8">
-                      <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
-                        v-model="editedItem.departamento" clearable label="Departamento" :items="itemsDeps"
-                        item-title="departamento">
-                      </v-combobox>
-                    </v-col>
+                  <v-container>
+                    <p>Direccion:</p>
+                    <v-row>
 
-                    <v-col cols="12" sm="6" md="4">
-                      <v-combobox :rules="[rules.required]" return-object auto-select-first="exact"
-                        v-model="editedItem.via" label="Tipo de Vía" :items="itemsVia" item-title="tipo">
-                      </v-combobox>
-                    </v-col>
+                      <v-col cols="12" sm="6" md="8">
+                        <v-combobox :rules="[v => !!v || 'Seleccione un departamento']" requiered
+                          auto-select-first="exact" v-model="editedItem.departamento" clearable label="Departamento"
+                          :items="colombiaJS" item-title="departamento">
 
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.vianum1" label="Segun tipo de via"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.vianum2" label="#"></v-text-field>
-                    </v-col>
-                    <v-col cols="12" sm="6" md="4">
-                      <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
-                    </v-col>
+                        </v-combobox>
+                      </v-col>
+                      <!--El siguiente botón permite buscar las ciudades correspondientes según el dep seleccionado-->
+                      <v-col cols="12" sm="2" md="2">
+                        <v-btn v-if="this.editedItem.departamento" required @click="agregarDepartamentos"
+                          label="Desplegar ciudades" color="primary" icon="mdi mdi-check-circle"></v-btn>
+                      </v-col>
 
-                  </v-row>
-                </v-container>
+                      <v-col v-if="this.editedItem.departamento" id="combobox-ciudades" cols="12" sm="6" md="8">
+                        <v-combobox auto-select-first="exact" return-object clearable label="Ciudad"
+                          :items="itemsCiudades" item-title="ciudad" v-model="editedItem.ciudad">
+                        </v-combobox>
+
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="4">
+                        <v-combobox :rules="[v => !!v || 'Seleccione el tipo de vía de su dirección']" requiered
+                          return-object auto-select-first="exact" v-model="editedItem.via" label="Tipo de Vía"
+                          :items="itemsVia" item-title="tipo">
+                        </v-combobox>
+                      </v-col>
+
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field v-model="editedItem.vianum1" label="Segun tipo de via"></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field v-model="editedItem.vianum2" label="#"></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
+                      </v-col>
+
+                    </v-row>
+                  </v-container>
+                </v-form>
               </v-card-text>
 
               <v-card-actions>
@@ -88,7 +104,11 @@
                 <v-btn color="blue-darken-1" variant="text" @click="close">
                   Cancelar
                 </v-btn>
-                <v-btn color="blue-darken-1" variant="text" @click="save">
+                <!--  <v-btn v-if="editedItem.departamento !== 0 & editedItem.via !== 0" color="blue-darken-1" variant="text"
+                  @click="save">
+                  Añadir Nuevo Usuario
+                </v-btn> -->
+                <v-btn @click="validate" :disabled="!valid" color="blue-darken-1" variant="text">
                   Añadir Nuevo Usuario
                 </v-btn>
               </v-card-actions>
@@ -128,6 +148,7 @@
 <script>
 
 import db from '../firebase/init.js'
+/* import Vue from "vue"; */
 import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { colombiaJS } from "/colombia.js";
 
@@ -135,16 +156,25 @@ export default {
 
 
   data: () => ({
+
+    valid: true,
+
+    dniRules: [
+      v => !!v || 'Se requiere Identificación',
+      v => (v && v.length >= 7) || 'Debe tener más de 7 dígitos'
+    ],
+    emailRules: [
+        v => !!v || 'Se requiere e-mail',
+        v => /.+@.+/.test(v) || 'El e-mail debe ser válido'
+      ],
+
     contadorUsuarios: {
       contador: 0,
       contadorid: 0
     },
 
-    rules: {
-      required: value => !!value || 'Field is required',
-    },
-
-    itemsDeps: colombiaJS,
+    itemsCiudades: [],
+    colombiaJS,
 
     itemsVia: [
       { id: 0, tipo: "Anillo" },
@@ -171,7 +201,7 @@ export default {
         key: 'name',
       },
       { title: 'Id', key: 'id' },
-      { title: 'DNI', key: 'dni' },
+      { title: 'Identificación', key: 'identificacion' },
       { title: 'Nombre', key: 'nombre' },
       { title: 'Usuario', key: 'usuario' },
       { title: 'Email', key: 'email' },
@@ -188,7 +218,7 @@ export default {
     editedItem: {
       keyid: '',
       id: 0,
-      dni: 0,
+      identificacion: 0,
       nombre: 0,
       usuario: 0,
       email: 0,
@@ -198,14 +228,15 @@ export default {
       vianum1: 0,
       vianum2: 0,
       vianum3: 0,
-      departamento: 0,
+      departamento: null,
+      ciudad: 0,
       direccion: 0,
     },
 
     defaultItem: {
       name: '',
       id: 0,
-      dni: 0,
+      identificacion: 0,
       nombre: 0,
       usuario: 0,
       email: 0,
@@ -216,6 +247,7 @@ export default {
       vianum2: 0,
       vianum3: 0,
       departamento: 0,
+      ciudad: 0,
       direccion: 0,
     },
   }),
@@ -233,6 +265,23 @@ export default {
   },
 
   methods: {
+    
+    //Esta funcion permite mostrar el boton si los campos requeridos estan completos
+    validate() {
+      if (this.$refs.form.validate()) {
+        this.snackbar = true
+      }
+      this.save();
+    },
+
+    //Esta función permite separar las ciudades ya que estaban unidas en un msimo objeto, y las guarda en itemsCiudades
+    agregarDepartamentos() {
+      const ciudades = this.colombiaJS[this.editedItem.departamento.id].ciudades;
+      this.itemsCiudades = ciudades.map(ciudad => ({
+        ciudad: ciudad,
+      }))
+      console.log("Array ciduades", this.itemsCiudades)
+    },
 
     //Mediante esta función podemos llamar y guardar los datos del contador en nuestro objeto 
     async llamarContador() {
@@ -266,7 +315,7 @@ export default {
       console.log(this.editedItem.name, this.editedItem.id, this.editedItem.usuario, this.editedItem.nombre, this.editedItem.password,)
       const dataObj = {
         id: this.contadorUsuarios.contador,
-        dni: this.editedItem.dni,
+        identificacion: this.editedItem.identificacion,
         nombre: this.editedItem.nombre,
         usuario: this.editedItem.usuario,
         email: this.editedItem.email,
@@ -277,7 +326,8 @@ export default {
         vianum3: this.editedItem.vianum3,
         password: this.editedItem.password,
         departamento: this.editedItem.departamento.departamento,
-        direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
+        ciudad: this.editedItem.ciudad.ciudad,
+        direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.ciudad.ciudad + ", " + this.editedItem.departamento.departamento,
       }
       const docRef = await addDoc(colRef, dataObj);
       console.log("Creo el usuario con nombre", docRef.id);
@@ -300,7 +350,7 @@ export default {
       console.log(this.editedItem.keyid)
       const Ref = doc(db, "usuarios", this.editedItem.keyid);
       await updateDoc(Ref, {
-        dni: this.editedItem.dni,
+        identificacion: this.editedItem.identificacion,
         nombre: this.editedItem.nombre,
         usuario: this.editedItem.usuario,
         email: this.editedItem.email,
@@ -310,9 +360,11 @@ export default {
         vianum1: this.editedItem.vianum1,
         vianum2: this.editedItem.vianum2,
         vianum3: this.editedItem.vianum3,
+        ciudad: this.editedItem.ciudad,
         departamento: this.editedItem.departamento,
-        direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.departamento.departamento,
+        direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.ciudad.ciudad + ", " + this.editedItem.departamento.departamento,
       })
+
     },
 
     /* Con este metodo podemos mostrar los datos en la grilla trayendolos de la base de datos*/
@@ -326,7 +378,7 @@ export default {
         this.desserts.push({
           keyid: doc.id,
           id: doc.data().id,
-          dni: doc.data().dni,
+          identificacion: doc.data().identificacion,
           nombre: doc.data().nombre,
           usuario: doc.data().usuario,
           email: doc.data().email,
@@ -334,6 +386,7 @@ export default {
           password: doc.data().password,
           direccion: doc.data().direccion,
           departamento: doc.data().departamento,
+          ciudad: doc.data().ciudad,
           via: doc.data().via,
           vianum1: doc.data().vianum1,
           vianum2: doc.data().vianum2,
@@ -402,7 +455,6 @@ export default {
       } else {
         this.desserts.push(this.editedItem)
         this.crearRegistros();
-
         this.limpiarCrud();
         this.listarDatos();
       }
