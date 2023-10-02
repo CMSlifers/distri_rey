@@ -64,17 +64,13 @@
 
                         </v-combobox>
                       </v-col>
-                      <!--El siguiente botón permite buscar las ciudades correspondientes según el dep seleccionado-->
-                      <v-col cols="12" sm="2" md="2">
-                        <v-btn v-if="this.editedItem.departamento" required @click="agregarDepartamentos"
-                          label="Desplegar ciudades" color="primary" icon="mdi mdi-check-circle"></v-btn>
-                      </v-col>
 
-                      <v-col v-if="this.editedItem.departamento" id="combobox-ciudades" cols="12" sm="6" md="8">
+
+                      <v-col v-if="this.editedItem.departamento" @click="agregarDepartamentos" id="combobox-ciudades"
+                        cols="12" sm="6" md="8">
                         <v-combobox auto-select-first="exact" return-object clearable label="Ciudad"
                           :items="itemsCiudades" item-title="ciudad" v-model="editedItem.ciudad">
                         </v-combobox>
-
                       </v-col>
 
                       <v-col cols="12" sm="6" md="4">
@@ -126,6 +122,7 @@
             </v-card>
           </v-dialog>
         </v-toolbar>
+        
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon size="small" color="primary" class="me-2" @click="editItem(item.raw)">
@@ -141,6 +138,7 @@
         </v-btn>
       </template>
     </v-data-table>
+  
   </v-container>
 </template>
     
@@ -148,7 +146,6 @@
 <script>
 
 import db from '../firebase/init.js'
-/* import Vue from "vue"; */
 import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { colombiaJS } from "/colombia.js";
 
@@ -164,9 +161,9 @@ export default {
       v => (v && v.length >= 7) || 'Debe tener más de 7 dígitos'
     ],
     emailRules: [
-        v => !!v || 'Se requiere e-mail',
-        v => /.+@.+/.test(v) || 'El e-mail debe ser válido'
-      ],
+      v => !!v || 'Se requiere e-mail',
+      v => /.+@.+/.test(v) || 'El e-mail debe ser válido'
+    ],
 
     contadorUsuarios: {
       contador: 0,
@@ -265,7 +262,7 @@ export default {
   },
 
   methods: {
-    
+
     //Esta funcion permite mostrar el boton si los campos requeridos estan completos
     validate() {
       if (this.$refs.form.validate()) {
@@ -396,7 +393,6 @@ export default {
       })
 
     },
-
 
     initialize() {
       this.desserts = [

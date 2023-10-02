@@ -8,6 +8,7 @@
           <v-spacer></v-spacer>
           <v-dialog v-model="dialog" max-width="500px">
             <template v-slot:activator="{ props }">
+              <v-btn @click="imprimir" color="white" icon="mdi mdi-printer" title="Imprimir PDF"></v-btn>
               <v-btn color="white" dark class="mb-2" v-bind="props" @click="llamarCategoria">
                 Crear Productos
               </v-btn>
@@ -40,7 +41,7 @@
               </v-form>
 
               </v-card-text>
-
+              
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue-darken-1" variant="text" @click="close">
@@ -52,8 +53,10 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
+              
               <v-card-title class="text-h5">¿Seguro desea eliminar este producto?</v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -64,7 +67,9 @@
             </v-card>
           </v-dialog>
         </v-toolbar>
+        
       </template>
+      
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon size="small" color="primary" class="me-2" @click="editItem(item.raw)">
           mdi-pencil
@@ -87,6 +92,8 @@
 
 import db from '../firebase/init.js'
 import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default {
 
@@ -256,6 +263,25 @@ export default {
     async limpiarListaCategoria() {
       this.datosCategoria = [];
     },
+
+    async imprimir() {
+      let columns = [
+        { title: "Código", dataKey: "cod" },
+        { title: "Nombre", dataKey: "nombre" },
+        { title: "Categoria", dataKey: "categoria" },
+      ];
+      let registros = this.desserts;
+      let doc = new jsPDF("p", "pt");
+      doc.autoTable(columns, registros, {
+        margin: { top: 60 },
+        addPageContent: function () {
+          doc.setTextColor("#1A237E");
+          doc.text("Productos", 40, 30);
+        },
+      });
+      doc.save("Productos.pdf");
+    },
+
 
     initialize() {
       this.desserts = [

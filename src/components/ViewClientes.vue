@@ -8,6 +8,7 @@
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ props }">
+                            <v-btn @click="imprimir" color="white" icon="mdi mdi-printer" title="Imprimir PDF"></v-btn>
                             <v-btn @click="llamarContador" color="white" dark class="mb-2" v-bind="props">
                                 Nuevo Cliente
                             </v-btn>
@@ -23,8 +24,8 @@
                                         <v-row>
 
                                             <v-col cols="12" sm="6" md="6">
-                                                <v-text-field required :rules="dniRules"  v-model="editedItem.identificacion"
-                                                    label="Identificación"  ></v-text-field>
+                                                <v-text-field required :rules="dniRules" v-model="editedItem.identificacion"
+                                                    label="Identificación"></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="6">
                                                 <v-text-field v-model="editedItem.nombre" label="nombre"></v-text-field>
@@ -50,6 +51,13 @@
                                                     :items="colombiaJS" item-title="departamento">
                                                 </v-combobox>
                                             </v-col>
+                                            <v-col v-if="this.editedItem.departamento" @click="agregarDepartamentos"
+                                                id="combobox-ciudades" cols="12" sm="6" md="8">
+                                                <v-combobox auto-select-first="exact" return-object clearable label="Ciudad"
+                                                    :items="itemsCiudades" item-title="ciudad" v-model="editedItem.ciudad">
+                                                </v-combobox>
+                                            </v-col>
+
 
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-combobox
@@ -110,7 +118,7 @@
                 <v-icon size="small" class="me-2" color="primary" @click="editItem(item.raw)">
                     mdi-pencil
                 </v-icon>
-                <v-icon  v-if="RolAdmin" size="small" color="red" @click="deleteItem(item.raw)">
+                <v-icon v-if="RolAdmin" size="small" color="red" @click="deleteItem(item.raw)">
                     mdi-delete
                 </v-icon>
             </template>
@@ -129,16 +137,18 @@
 import db from '../firebase/init.js'
 import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore'
 import { colombiaJS } from "/colombia.js";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 import { mapState } from 'vuex';
 
 export default {
 
     data: () => ({
-  
+
 
         valid: true,
- 
+
         dniRules: [
             v => !!v || 'Se requiere Identificación',
             v => (v && v.length >= 7) || 'Debe tener más de 7 dígitos'
@@ -149,8 +159,8 @@ export default {
         ],
 
         contadorClientes: [
-            
-        ],  
+
+        ],
 
         colombiaJS,
 
@@ -218,18 +228,18 @@ export default {
     }),
 
     computed: {
-        
+
         formTitle() {
-            
+
             return this.editedIndex === -1 ? 'Nuevo Cliente' : 'Editar Cliente'
-            
+
         },
 
         ...mapState(['rol']),
 
         RolAdmin() {
-        return this.rol === 'ADMIN'; // Condición para verificar si es un usuario ADMIN
-    }
+            return this.rol === 'ADMIN'; // Condición para verificar si es un usuario ADMIN
+        }
     },
 
     watch: {
@@ -351,6 +361,27 @@ export default {
                     vianum3: doc.data().vianum3,
                 })
             })
+        },
+
+        async imprimir() {
+            let columns = [
+                { title: "Identificación", dataKey: "identificacion" },
+                { title: "Nombre", dataKey: "nombre" },
+                { title: "Email", dataKey: "email" },
+                { title: "Telefono", dataKey: "telefono" },
+                { title: "Direccion", dataKey: "direccion" },
+            ];
+            let registros = this.desserts;
+            let doc = new jsPDF("p", "pt");
+            doc.autoTable(columns, registros, {
+                margin: { top: 60 },
+                addPageContent: function () {
+                    doc.setTextColor("#1A237E");
+                    doc.text("Clientes", 40, 30);
+
+                },
+            });
+            doc.save("Clientes.pdf");
         },
 
         initialize() {
