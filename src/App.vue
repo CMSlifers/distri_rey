@@ -5,63 +5,65 @@
    <v-app-bar-nav-icon @click="drawer = ! drawer"></v-app-bar-nav-icon>    
 
     <v-toolbar-title>Distribuciones Rey 👑</v-toolbar-title>
-    <v-btn class="login"  @click="login">LOG IN</v-btn>
-    <v-btn class="loginOut" @click="logout">LOG OUT</v-btn>
+    <v-btn v-if="rol === 'View'" class="login"  @click="login">LOG IN</v-btn>
+    <v-btn v-if="rol === 'ADMIN' || rol === 'VENDEDOR'" class="loginOut" @click="logout">LOG OUT</v-btn>
+    <div v-if="mensajeLogout">{{ mensajeLogout }}</div>
 
     </v-toolbar>
     
 
-    <v-navigation-drawer app v-model="drawer" temporary color="" class="navdrawer" >
+    <v-navigation-drawer width = '280' app v-model="drawer" temporary color="" class="navdrawer" >
       <v-layout mt-5 column align-center>
 
         
-        <v-list class="listadrawer">
+        <v-list class="listadrawer ">
           <v-img
               class="mx-auto my-6"
               max-width="128"
               src="./assets/dr.1.jpeg"
+           
           ></v-img>
 
           <p style="margin-left: 20px; margin-top: 1px; margin-bottom: 13px;">{{ rol }}: {{ dato }}</p>   
 
-        <v-list-item class="list-group" prepend-icon="mdi mdi-home" title="Home" value="home" to="/"  @click="UserLog"></v-list-item>
+        <v-list-item v-if="rol !== 'View'" class="list-group" prepend-icon="mdi mdi-home" title="Home" value="home" to="/"  @click="UserLog"></v-list-item>
 
 
-        <v-list-group  value="Personas" prepend-icon="mdi-account-group-outline"  @click="UserLog">
+        <v-list-group v-if="rol !== 'View'" value="Personas" prepend-icon="mdi-account-group-outline"  @click="UserLog">
           <template v-slot:activator="{ props }">
             <v-list-item class="list-group"
               v-bind="props"
               title="Personas"
             ></v-list-item>
           </template>
-            <v-list-item class="list-items" prepend-icon="mdi-account" title="Proveedores" value="proveedores" to="/ViewProveedores"></v-list-item>
+            <v-list-item v-if="rol === 'ADMIN'" class="list-items" prepend-icon="mdi-account" title="Proveedores" value="proveedores" to="/ViewProveedores"></v-list-item>
             <v-list-item class="list-items" prepend-icon="mdi mdi-account-tie" title="Clientes" value="clientes" to="/ViewClientes"></v-list-item>  
-            <v-list-item class="list-items" prepend-icon="mdi mdi-account-group" title="Usuarios" value="users" to="/ViewUsuarios"></v-list-item>      
+            <v-list-item v-if="rol === 'ADMIN'" class="list-items" prepend-icon="mdi mdi-account-group" title="Usuarios" value="users" to="/ViewUsuarios"></v-list-item>      
         </v-list-group>
 
-        <v-list-group   value="Productos" prepend-icon="mdi mdi-file-table-box-multiple"  @click="UserLog">
+        <v-list-group v-if="rol !== 'View'" value="Productos" prepend-icon="mdi mdi-file-table-box-multiple"  @click="UserLog">
           <template v-slot:activator="{ props }">
             <v-list-item class="list-group"
               v-bind="props"
               title="Productos"
             ></v-list-item>
           </template> 
-            <v-list-item class="list-items" prepend-icon="mdi mdi-shape-plus" title="Categoria" value="categoria" to="/ViewCategoria"></v-list-item>  
+            <v-list-item v-if="rol === 'ADMIN'" class="list-items" prepend-icon="mdi mdi-shape-plus" title="Categoria" value="categoria" to="/ViewCategoria"></v-list-item>  
             <v-list-item class="list-items" prepend-icon="mdi mdi-table-large" title="Inventarios" value="inventarios" to="/ViewInventario"></v-list-item> 
             <v-list-item class="list-items" prepend-icon="mdi mdi-currency-usd" title="Precios" value="precio" to="/ViewPrecios"></v-list-item> 
-            <v-list-item class="list-items" prepend-icon="mdi-account-group-outline" title="Productos" value="productos" to="/ViewProductos"></v-list-item>
+            <v-list-item  v-if="rol === 'ADMIN'" class="list-items" prepend-icon="mdi-account-group-outline" title="Productos" value="productos" to="/ViewProductos"></v-list-item>
             
    
         </v-list-group>
 
-        <v-list-group  value="Transacciones" prepend-icon="mdi mdi-shape-plus" @click="UserLog">
+        <v-list-group v-if="rol !== 'View'" value="Transacciones" prepend-icon="mdi mdi-shape-plus" @click="UserLog">
           <template v-slot:activator="{ props }">
             <v-list-item class="list-group"
               v-bind="props"
               title="Transacciones"
             ></v-list-item>
           </template>     
-            <v-list-item class="list-items" prepend-icon="mdi mdi-shopping" title="Compras" value="compras" to="/ViewCompras" ></v-list-item>
+            <v-list-item v-if="rol === 'ADMIN'" class="list-items" prepend-icon="mdi mdi-shopping" title="Compras" value="compras" to="/ViewCompras" ></v-list-item>
             <v-list-item class="list-items" prepend-icon="mdi mdi-account-cash" title="Ventas" value="ventas" to="ViewVentas"></v-list-item>   
         </v-list-group>
 
@@ -69,6 +71,8 @@
 
         </v-list>
       </v-layout>   
+
+
 
     </v-navigation-drawer>
 
@@ -95,7 +99,8 @@
       rail: true,
       dato: this.$store.state.usuario,
       rol:this.$store.state.rol,
-      fechaAct:this.$store.state.fechaActual
+      fechaAct:this.$store.state.fechaActual,
+  
 
       
     }
@@ -112,10 +117,13 @@
 
     logout() {
       //incluir codigo para destruir sesion
+ 
       this.$router.push({ name: 'ViewHome' }); // redirecciona a login
-  /*     console.log("datos ",this.$store.state.usuario) */
+        window.alert(this.$store.state.usuario + ', has cerrado sesión!');
         this.$store.state.usuario = ""
         this.$store.state.rol = "View"
+  
+        
     },
 
     UserLog() {
@@ -152,7 +160,7 @@
 
 .list-items:hover{
     background: #ffffff;
-    color: #0a8114;
+    color: #1A237E;
 }
 .list-group:hover{
     background: #1A237E;

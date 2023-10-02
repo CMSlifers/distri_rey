@@ -361,15 +361,8 @@ export default {
 
         initialize() {
             this.desserts = [
-                /*         {
-                
-                          id: 2,
-                          nit: "SaToPi",
-                          nombre: 24,
-                          direccion: "olis",
-                        },
-                        {
-                 */
+
+
             ]
         },
 
@@ -422,31 +415,6 @@ export default {
             this.close()
 
         },
-        /* 
-                async imprimir() {
-        
-                    let columns = [
-                        { title: 'Id', key: 'id' },
-                        { title: 'Nit', key: 'nit' },
-                        { title: 'Nombre', key: 'nombre' },
-                        { title: 'Email', key: 'email' },
-                        { title: 'Telefono', key: 'telefono' },
-                        { title: 'Direccion', key: 'direccion' },
-                        
-                        
-                    ];
-        
-                    let registros = this.desserts;
-                    let doc = new jsPDF("p", "pt");
-                    doc.autoTable(columns, registros, {
-                        margin: { top: 60 },
-                        addPageContent: function () {
-                            doc.text("proveedores", 40, 30);
-                        },
-                    });
-                    doc.save("Usuarios.pdf");
-                }, */
-
 
     },
 

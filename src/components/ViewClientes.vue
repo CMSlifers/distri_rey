@@ -8,7 +8,7 @@
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialog" max-width="500px">
                         <template v-slot:activator="{ props }">
-                            <v-btn @click="llamarContador" ccolor="white" dark class="mb-2" v-bind="props">
+                            <v-btn @click="llamarContador" color="white" dark class="mb-2" v-bind="props">
                                 Nuevo Cliente
                             </v-btn>
                         </template>
@@ -98,7 +98,7 @@
                             <v-card-title class="text-h6">¿Está seguro que desea eliminar este Cliente?</v-card-title>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
+                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancelar</v-btn>
                                 <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
                                 <v-spacer></v-spacer>
                             </v-card-actions>
@@ -110,7 +110,7 @@
                 <v-icon size="small" class="me-2" color="primary" @click="editItem(item.raw)">
                     mdi-pencil
                 </v-icon>
-                <v-icon size="small" color="red" @click="deleteItem(item.raw)">
+                <v-icon  v-if="RolAdmin" size="small" color="red" @click="deleteItem(item.raw)">
                     mdi-delete
                 </v-icon>
             </template>
@@ -130,13 +130,15 @@ import db from '../firebase/init.js'
 import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore'
 import { colombiaJS } from "/colombia.js";
 
-
+import { mapState } from 'vuex';
 
 export default {
+
     data: () => ({
+  
 
         valid: true,
-
+ 
         dniRules: [
             v => !!v || 'Se requiere Identificación',
             v => (v && v.length >= 7) || 'Debe tener más de 7 dígitos'
@@ -180,7 +182,7 @@ export default {
             { title: 'Email', key: 'email' },
             { title: 'Telefono', key: 'telefono' },
             { title: 'Direccion', key: 'direccion' },
-            { title: 'Actions', key: 'actions', sortable: false },
+            { title: 'Acciones', key: 'actions', sortable: false },
         ],
         desserts: [],
         editedIndex: -1,
@@ -216,9 +218,18 @@ export default {
     }),
 
     computed: {
+        
         formTitle() {
+            
             return this.editedIndex === -1 ? 'Nuevo Cliente' : 'Editar Cliente'
+            
         },
+
+        ...mapState(['rol']),
+
+        RolAdmin() {
+        return this.rol === 'ADMIN'; // Condición para verificar si es un usuario ADMIN
+    }
     },
 
     watch: {

@@ -84,11 +84,8 @@ export default {
         valid: true,
 
         contadorCategorias: [],
-
         dialog: false,
-
         dialogDelete: false,
-
         headers: [
             {
                 /* title: 'Dessert (100g serving)' */
