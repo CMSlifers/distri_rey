@@ -17,7 +17,136 @@
                             <v-card-title>
                                 <span class="text-h5">{{ formTitle }}</span>
                             </v-card-title>
+<v-dialog v-model="dialog" max-width="500px">
+            <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1">
+            <template v-slot:top>
+                <v-toolbar class="crud-title" flat>
+                    <v-toolbar-title>Clientes</v-toolbar-title>
+                    <v-divider class="mx-4" inset vertical></v-divider>
+                    <v-spacer></v-spacer>
+                    <v-dialog v-model="dialog" max-width="500px">
+                        <template v-slot:activator="{ props }">
+                            <v-btn @click="imprimir" color="white" icon="mdi mdi-printer" title="Imprimir PDF"></v-btn>
+                            <v-btn @click="llamarContador" color="white" dark class="mb-2" v-bind="props">
+                                Nuevo Cliente
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-card-title>
+                                <span class="text-h5">{{ formTitle }}</span>
+                            </v-card-title>
 
+                            <v-card-text>
+                                <v-form lazy-validation v-model="valid" ref="form">
+                                    <v-container>
+                                        <v-row>
+
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-text-field required :rules="dniRules" v-model="editedItem.identificacion"
+                                                    label="Identificación"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-text-field v-model="editedItem.nombre" label="nombre"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="6">
+                                                <v-text-field v-model="editedItem.email" :rules="emailRules" required
+                                                    label="E-mail"></v-text-field>
+                                            </v-col>
+                                            <v-col>
+                                                <v-text-field v-model="editedItem.telefono" label="telefono"></v-text-field>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
+
+                                    <v-container>
+                                        <p>Direccion:</p>
+                                        <v-row>
+
+                                            <v-col cols="12" sm="6" md="8">
+                                                <v-combobox :rules="[v => !!v || 'Seleccione un departamento']" requiered
+                                                    return-object auto-select-first="exact"
+                                                    v-model="editedItem.departamento" clearable label="Departamento"
+                                                    :items="colombiaJS" item-title="departamento">
+                                                </v-combobox>
+                                            </v-col>
+                                            <v-col v-if="this.editedItem.departamento" @click="agregarDepartamentos"
+                                                id="combobox-ciudades" cols="12" sm="6" md="8">
+                                                <v-combobox auto-select-first="exact" return-object clearable label="Ciudad"
+                                                    :items="itemsCiudades" item-title="ciudad" v-model="editedItem.ciudad">
+                                                </v-combobox>
+                                            </v-col>
+
+
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-combobox
+                                                    :rules="[v => !!v || 'Seleccione el tipo de vía de su dirección']"
+                                                    requiered return-object auto-select-first="exact"
+                                                    v-model="editedItem.via" label="Tipo de Vía" :items="itemsVia"
+                                                    item-title="tipo">
+                                                </v-combobox>
+                                            </v-col>
+
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.vianum1"
+                                                    label="Segun tipo de via"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.vianum2" label="#"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
+                                            </v-col>
+
+                                            <!--                     <v-col cols="12" sm="6" md="8">
+                      <v-combobox auto-select-first="exact" return-object clearable label="Ciudad" :items="colombiaJS"
+                        item-title="ciudades">
+                      </v-combobox>
+                    </v-col>
+ -->
+                                        </v-row>
+                                    </v-container>
+                                </v-form>
+                            </v-card-text>
+
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="close">
+                                    Cancelar
+                                </v-btn>
+                                <v-btn :disabled="!valid" @click="validate" color="blue-darken-1" variant="text">
+                                    Añadir Nuevo Cliente
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                    <v-dialog v-model="dialogDelete" max-width="500px">
+                        <v-card>
+                            <v-card-title class="text-h6">¿Está seguro que desea eliminar este Cliente?</v-card-title>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancelar</v-btn>
+                                <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
+                                <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-toolbar>
+            </template>
+            <template v-slot:[`item.actions`]="{ item }">
+                <v-icon size="small" class="me-2" color="primary" @click="editItem(item.raw)">
+                    mdi-pencil
+                </v-icon>
+                <v-icon v-if="RolAdmin" size="small" color="red" @click="deleteItem(item.raw)">
+                    mdi-delete
+                </v-icon>
+            </template>
+            <template v-slot:no-data>
+                <v-btn color="primary" @click="initialize">
+                    Reset
+                </v-btn>
+            </template>
+        </v-data-table>
+          </v-dialog>
                             <v-card-text>
                                 <v-form lazy-validation v-model="valid" ref="form">
                                     <v-container>
@@ -138,7 +267,6 @@ import db from '../firebase/init.js'
 import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore'
 import { colombiaJS } from "/colombia.js";
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 
 import { mapState } from 'vuex';
 

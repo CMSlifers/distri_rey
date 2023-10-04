@@ -93,7 +93,6 @@
 import db from '../firebase/init.js'
 import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 
 export default {
 
@@ -141,6 +140,7 @@ export default {
       cod: 0,
       nombre: 0,
       catego: 0,
+      cantidad: 0,
     },
 
     defaultItem: {
@@ -149,6 +149,7 @@ export default {
       cod: 0,
       nombre: 0,
       catego: 0,
+      cantidad: 0,
     },
   }),
 
@@ -201,9 +202,10 @@ export default {
       const colRef = collection(db, 'productos')
       const dataObj = {
         id: this.contadorProductos.contador,
-        cod: this.editedItem.cod,
-        nombre: this.editedItem.nombre,
-        categoria: this.editedItem.catego.categoria
+        codigo: this.editedItem.cod,
+        producto: this.editedItem.nombre,
+        categoria: this.editedItem.catego.categoria,
+        cantidad: this.editedItem.cantidad
       }
       await addDoc(colRef, dataObj);
       this.incrementarContador();
@@ -225,7 +227,7 @@ export default {
       const Ref = doc(db, "productos", this.editedItem.keyid);
       await updateDoc(Ref, {
         cod: this.editedItem.cod,
-        nombre: this.editedItem.nombre,
+        producto: this.editedItem.nombre,
       })
     },
 
@@ -238,9 +240,10 @@ export default {
         this.desserts.push({
           keyid: doc.id,
           id: doc.data().id,
-          cod: doc.data().cod,
-          nombre: doc.data().nombre,
+          cod: doc.data().codigo,
+          nombre: doc.data().producto,
           categoria: doc.data().categoria,
+          cantidad: doc.data().cantidad,
         })
         this.limpiarListaCategoria()
       });
@@ -269,6 +272,7 @@ export default {
         { title: "Código", dataKey: "cod" },
         { title: "Nombre", dataKey: "nombre" },
         { title: "Categoria", dataKey: "categoria" },
+        { title: "Cantidad", dataKey: "cantidad" },
       ];
       let registros = this.desserts;
       let doc = new jsPDF("p", "pt");

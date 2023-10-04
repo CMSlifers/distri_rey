@@ -1,3 +1,4 @@
+
 <template>
     <v-container>
 
@@ -17,137 +18,55 @@
                     <v-text-field v-model="editedItem.nombre" label="Proveedor"></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
-
-                    <v-btn @click="mostrarTabla" color="white" dark class="mb-2">
-                        Proveedores
-                    </v-btn>
-
-
                 </v-col>
             </v-row>
 
         </v-card-text>
 
-
-        <!--             <v-data-table v-show="false" :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1 "> -->
-            <v-data-table v-show="mostrarPopup" :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1 ">
+        <v-dialog v-model="dialog" max-width="900px">
 
 
-        <template v-slot:top>
-            <v-toolbar v-model="valid" class="crud-title" flat>
-                <v-toolbar-title>Proveedores</v-toolbar-title>
-                <v-divider class="mx-4" inset vertical></v-divider>
-                <v-spacer></v-spacer>
-                <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{ props }">
+                <v-col cols="auto">                
+                    <v-btn @click="mostrarTabla" color="primary" dark class="mb-2" v-bind="props" density="compact" icon="mdi-plus" title="Seleccionar Proveedor"></v-btn>
+                </v-col>
+            </template>
+            
+            <!--             <v-data-table v-show="false" :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1 "> -->
+            <v-data-table v-show="mostrarPopup" :headers="headers" :items="desserts"
+                :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1 ">
 
-                    <v-card>
-                        <v-card-title>
-                            <span class="text-h5">{{ formTitle }}</span>
-                        </v-card-title>
 
-                        <v-card-text>
-                            <v-form ref="form" v-model="valid" lazy-validation>
-                                <v-container>
-                                    <v-row>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="editedItem.nit" label="NIT" required
-                                                :rules="nitRules"></v-text-field>
-                                        </v-col>
-                                        <v-col>
-                                            <v-text-field v-model="editedItem.telefono" label="telefono"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="editedItem.nombre" label="nombre"></v-text-field>
-                                        </v-col>
+                <template v-slot:top>
+                    <v-toolbar v-model="valid" class="crud-title" flat>
+                        <v-toolbar-title>Proveedores</v-toolbar-title>
+                        <v-divider class="mx-4" inset vertical></v-divider>
+                        <v-spacer></v-spacer>
 
-                                        <v-col cols="12" sm="6" md="6">
-                                            <v-text-field v-model="editedItem.email" label="email"></v-text-field>
-                                        </v-col>
-                                    </v-row>
-                                </v-container>
-                                <v-container>
-                                    <p>Direccion:</p>
-                                    <v-row>
+                    </v-toolbar>
+                </template>
+                <template v-slot:[`item.actions`]="{ item }">
+                    <v-icon size="small" color="primary" class="me-2" @click="ocultarTabla()">
+                        mdi-plus-circle-outline
+                    </v-icon>
+                    <v-icon v-show="false" size="small" color="primary" class="me-2" @click="editItem(item.raw)">
+                        mdi-pencil
+                    </v-icon>
+                    <v-icon v-show="false" size="small" color="red" @click="deleteItem(item.raw)">
+                        mdi-delete
+                    </v-icon>
+                </template>
+                <template v-slot:no-data>
+                    <v-btn color="primary" @click="initialize">
+                        Reset
+                    </v-btn>
+                </template>
+            </v-data-table>
 
-                                        <v-col cols="12" sm="10" md="12">
-                                            <v-combobox required :rules="[v => !!v || 'Seleccione un departamento']"
-                                                return-object auto-select-first="exact" v-model="editedItem.departamento"
-                                                clearable label="Departamento" :items="colombiaJS"
-                                                item-title="departamento">
-                                            </v-combobox>
-                                        </v-col>
-                                        <!--                                         <v-col cols="12" sm="10" md="8">
-                                            <v-combobox auto-select-first="exact" return-object clearable v-model="editedItem.ciudad" label="Ciudad"
-                                                :items="colombiaNuevo" item-title="ciudades">
-                                            </v-combobox>
-                                        </v-col> -->
-
-                                        <v-col cols="12" sm="5" md="12">
-                                            <v-combobox :rules="[v => !!v || 'Seleccione el tipo de vía de su dirección']"
-                                                required return-object auto-select-first="exact" v-model="editedItem.via"
-                                                label="Tipo de Vía" :items="itemsVia" item-title="tipo">
-                                            </v-combobox>
-                                        </v-col>
-
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.vianum1"
-                                                label="Segun tipo de via"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.vianum2" label="#"></v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.vianum3" label="-"></v-text-field>
-                                        </v-col>
+        </v-dialog>
 
 
 
-                                    </v-row>
-                                </v-container>
-                            </v-form>
-                        </v-card-text>
-
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="close">
-                                Cancelar
-                            </v-btn>
-                            <v-btn :disabled="!valid" @click="validate" color="blue-darken-1" variant="text">
-                                Añadir Nuevo Proveedor
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-                <v-dialog v-model="dialogDelete" max-width="500px">
-                    <v-card>
-                        <v-card-title class="text-h6">¿Está seguro que desea eliminar este proveedor?</v-card-title>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancelar</v-btn>
-                            <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
-                            <v-spacer></v-spacer>
-                        </v-card-actions>
-                    </v-card>
-                </v-dialog>
-            </v-toolbar>
-        </template>
-        <template v-slot:[`item.actions`]="{ item }">
-            <v-icon size="small" color="primary" class="me-2" @click="ocultarTabla(item.nit, item.nombre)">
-                mdi-plus-circle-outline
-            </v-icon>
-            <v-icon v-show ="false" size="small" color="primary" class="me-2" @click="editItem(item.raw)">
-                mdi-pencil
-            </v-icon>
-            <v-icon  v-show ="false" size="small" color="red" @click="deleteItem(item.raw)">
-                mdi-delete
-            </v-icon>
-        </template>
-        <template v-slot:no-data>
-            <v-btn color="primary" @click="initialize">
-                Reset
-            </v-btn>
-        </template>
-        </v-data-table>
     </v-container>
 </template>
     
@@ -156,13 +75,13 @@
 
 import db from '../firebase/init.js'
 import { collection, getDocs, query, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore'
-import { colombiaJS } from "/colombia.js";
-/* import { jsPDF } from "jspdf"; */
+
+
 export default {
     data: () => ({
         mostrarPopup: false,
-        nitTemp: '', 
-        nombreProveedorTemp: '',
+        nitProveedor: '',
+        nombreProveedor: '',
         valid: true,
 
         nitRules: [
@@ -183,20 +102,6 @@ export default {
             required: value => !!value || 'Field is required',
         },
 
-        colombiaJS,
-
-        itemsVia: [
-            { id: 0, tipo: "Anillo" },
-            { id: 1, tipo: "Autopista" },
-            { id: 2, tipo: "Avenida" },
-            { id: 3, tipo: "Avenida Calle" },
-            { id: 4, tipo: "Avenida Carrera" },
-            { id: 5, tipo: "Calle" },
-            { id: 6, tipo: "Carrera" },
-            { id: 7, tipo: "Circular" },
-            { id: 8, tipo: "Diagonal" },
-            { id: 0, tipo: "Transversal" }
-        ],
 
         dialog: false,
 
@@ -212,7 +117,7 @@ export default {
             { title: 'Nit', key: 'nit' },
             { title: 'Nombre', key: 'nombre' },
             { title: 'Telefono', key: 'telefono' },
-            { title: 'Acciones', key: 'actions', sortable: false }, 
+            { title: 'Acciones', key: 'actions', sortable: false },
         ],
 
         desserts: [],
@@ -223,8 +128,8 @@ export default {
         editedItem: {
             keyid: '',
             id: 0,
-            nit: 0,
-            nombre: 0,
+            nit: '',
+            nombre: '',
             email: 0,
             telefono: 0,
             via: 0,
@@ -239,8 +144,8 @@ export default {
         defaultItem: {
             name: '',
             id: 0,
-            nit: 0,
-            nombre: 0,
+            nit: '',
+            nombre: '',
             email: 0,
             telefono: 0,
             via: 0,
@@ -286,11 +191,12 @@ export default {
             this.mostrarPopup = true; // Mostrar la tabla cuando se hace clic en el botón
         },
         ocultarTabla() {
+            this.dialog = false; //oculte dialogo cuando seleccione el proveedor
             this.mostrarPopup = false; // ocultar la tabla cuando se hace clic en el botón
-            this.editedItem.nit = this.nitTemp;
-            console.log("nit es",this.editedItem.nit = this.nitTemp);
-            this.editedItem.nombre = this.nombreProveedorTemp;
-            console.log("nombre es", this.editedItem.nombre = this.nombreProveedorTemp);
+            this.editedItem.nit = this.nit;
+            console.log("nit es", this.editedItem.keyid.nit);
+            this.editedItem.nombre = this.nombre;
+            console.log("nombre es", this.editedItem.nombre);
 
         },
 
