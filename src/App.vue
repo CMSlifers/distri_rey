@@ -4,7 +4,7 @@
     <v-toolbar app color="primary" class="toolbar" @click="UserLog">
    <v-app-bar-nav-icon @click="drawer = ! drawer"></v-app-bar-nav-icon>    
 
-    <v-toolbar-title>DISTRIBUCIONES REY</v-toolbar-title>
+    <v-toolbar-title>Distribuciones Rey</v-toolbar-title>
     <v-btn v-if="rol === 'View'" class="login"  @click="login">LOG IN</v-btn>
     <v-btn v-if="rol === 'ADMIN' || rol === 'VENDEDOR'" class="loginOut" @click="logout">LOG OUT</v-btn>
     <div v-if="mensajeLogout">{{ mensajeLogout }}</div>
