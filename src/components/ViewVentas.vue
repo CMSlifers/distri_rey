@@ -1,4 +1,5 @@
 <template>
+    <!-- AQUI INICIA TODO LO RELACIONADO CON BUSCAR EL CLIENTE-->
     <v-container>
         <div class="cambiarAnchoContador">
             <p v-if="mostrarFormCliente" class="texto-contador">Venta No.<v-field class="center" ref="spanContador">{{
@@ -10,21 +11,22 @@
         <v-card-text>
             <v-form v-if="mostrarFormCliente">
 
-                <v-container class="center">
+                <v-container class="center ">
 
                     <v-row>
                         <v-col cols="12" sm="6" md="4">
-                            <v-text-field class="font-weight-medium" disabled ref="llenarIdentificacion"
-                                v-model="editedItem.identificacionCliente" label="Identificación Cliente"></v-text-field>
+                            <v-text-field class="font-weight-medium non-editable" @click="$event.preventDefault()"
+                                ref="llenarIdentificacion" v-model="editedItem.identificacion"
+                                label="Identificación Cliente"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="4">
-                            <v-text-field class="font-weight-medium" disabled ref="llenarNombre"
-                                v-model="editedItem.nombreCliente" label="Cliente"></v-text-field>
+                            <v-text-field class="font-weight-medium non-editable" @click="$event.preventDefault()"
+                                ref="llenarNombre" v-model="editedItem.cliente" label="Cliente"></v-text-field>
                         </v-col>
 
                         <v-dialog v-model="dialog" persistent width="1024">
                             <template v-slot:activator="{ props }">
-                                <v-btn @click="listarDatosClientes" color="primary" v-bind="props"
+                                <v-btn @click="listarDatosClientes" title="Buscar Cliente" color="primary" v-bind="props"
                                     icon="mdi mdi-account-search">
 
                                 </v-btn>
@@ -57,26 +59,24 @@
 
                         </v-dialog>
 
-
-
-
-
-
                     </v-row>
                 </v-container>
             </v-form>
         </v-card-text>
+        <!-- AQUI tERMINA TODO LO RELACIONADO CON BUSCAR EL CLIENTE-->
+
+        <!-- AQUI INICIA TODO LO RELACIONADO CON EL LLAMADO DE LOS PRODUCTOS-->
 
         <v-form v-if="mostrarFormProducto">
             <v-container v-if="mostrarFormCliente" class="center">
                 <v-row>
                     <v-col cols="12" sm="2" md="4">
-                        <v-text-field class="font-weight-medium" disabled ref="llenarCodigo"
-                            v-model="editedItem.codProducto" label="Código de Producto"></v-text-field>
+                        <v-text-field class="font-weight-medium non-editable" @click="$event.preventDefault()"
+                            ref="llenarCodigo" v-model="editedItem.codProducto" label="Código de Producto"></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
-                        <v-text-field class="font-weight-medium" disabled ref="llenarProducto"
-                            v-model="editedItem.nombreCliente" label="Producto"></v-text-field>
+                        <v-text-field class="font-weight-medium non-editable" @click="$event.preventDefault()"
+                            ref="llenarProducto" v-model="editedItem.cliente" label="Producto"></v-text-field>
                     </v-col>
 
                     <v-dialog v-model="dialog2" persistent width="1024">
@@ -117,44 +117,76 @@
         </v-form>
         <v-form v-show="mostrarFormExtra" v-model="valid">
             <v-card-text>
-                <v-container v-if="mostrarFormCliente">
+                <v-container class=" center" v-if="mostrarFormCliente">
                     <v-row>
                         <v-col cols="12" sm="6" md="3">
-                            <v-text-field type="number" prefix="$" v-model="editedItem.precio"
-                                :rules="[v => (v && v < this.guardarCantidadProducto  || 'La cantidad no puede ser meyaor al número de existencias   ') ]"
-                                label="Precio"></v-text-field>
+                            <v-text-field class="font-weight-medium non-editable" readonly prefix="$"
+                                v-model="editedItem.precio" ref="precio" label="Precio"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="3">
-                            <v-text-field hint="Ingrese la cantidad a vender de este producto" :rules="cantidadRules"
-                                requiered type="number" v-model="editedItem.cantidad" label="Cantidad"></v-text-field>
+                            <v-text-field v-on:change="calcularValorTotal"
+                                hint="Ingrese la cantidad a vender de este producto"
+                                :rules="[
+                                    v => !!v || 'Se requiere especificar una cantidad',
+                                    v => (v && v >= 1) || 'La cantidad no puede ser menor a 1   ',
+                                    v => (v && v <= dessertsCantidadProducto || 'La cantidad no puede ser mayor al número de existencias   ')]" requiered type="number"
+                                v-model="editedItem.cantidad" label="Cantidad"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="3">
-                            <v-field label="Cantidad Disponible">{{ dessertsCantidadProducto }}</v-field>
+                            <v-field label="Cantidad Disponible">{{ dessertsCantidadProducto }} </v-field>
                         </v-col>
                     </v-row>
                     <v-row>
                         <v-col cols="12" sm="6" md="3">
-                            <v-text-field hint="Ingrese el descuento correspondiente si lo hay"
-                                v-model="editedItem.descuento" label="Descuento"></v-text-field>
+                            <v-text-field v-on:change="calcularValorTotalDescuento" :rules="[
+
+                                v => (v >= 0) || 'La cantidad no puede ser menor a 0',]"
+                                hint="Ingrese el descuento correspondiente si lo hay" type="number"
+                                v-model="editedItem.descuento" label="Descuento (%)" suffix="%"></v-text-field>
                         </v-col>
                         <v-col cols="12" sm="6" md="3">
-                            <v-text-field prefix="$" v-model="editedItem.valorTotal" label="Valor Total"></v-text-field>
+                            <v-text-field class="non-editable" prefix="$" v-model="editedItem.valorTotal" ref="valorTotal"
+                                label="Valor Total"></v-text-field>
                         </v-col>
                     </v-row>
                 </v-container>
             </v-card-text>
-            <v-btn :disabled="!valid" color="blue-darken-1" variant="text">
+            <v-btn :disabled="!valid" color="blue-darken-1" variant="text" @click="agregarProductoVenta()">
                 Agregar
             </v-btn>
         </v-form>
+        <!-- AQUI TERMINA TODO LO RELACIONADO CON EL LLAMADO DE LOS PRODUCTOS-->
 
-        <v-btn v-if="mostrarFormCliente" @click="cambiarEstado()" ma="2">Guardar</v-btn>
 
+        <!-- ESTE ES EL BOTON DE GUARDAR-->
+        <v-btn v-show="mostrarBotonGuardar" @click="cambiarEstadoContador()" ma="2">Guardar</v-btn>
+
+
+        <!-- AQUI INICIA TODO LO RELACIONADO CON EL CRUD GENERAL-->
+
+        <v-container v-show="mostrarCrudGeneral">
+            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
+            <v-data-table :headers="headers" :items="desserts" :sort-by="[{ key: 'id', order: 'asc' }]" class="elevation-1"
+                :search="search">
+                <template v-slot:top>
+                    <v-toolbar color="primary" flat>
+                        <v-toolbar-title>Productos</v-toolbar-title>
+                        <v-divider class="mx-4" inset vertical></v-divider>
+                        <v-spacer></v-spacer>
+                        <v-btn @click="imprimir" color="white" icon="mdi mdi-printer" title="Imprimir PDF"></v-btn>
+                    </v-toolbar>
+
+                </template>
+
+
+            </v-data-table>
+        </v-container>
+        <!-- AQUI TERMINA TODO LO RELACIONADO CON EL CRUD GENERAL-->
     </v-container>
 </template>
 <script>
 import db from '../firebase/init.js'
-import { collection, getDocs, query, updateDoc, doc } from 'firebase/firestore'
+import { collection, getDocs, query, updateDoc, doc, addDoc } from 'firebase/firestore'
 export default {
     data: () => ({
         valid: true,
@@ -163,12 +195,15 @@ export default {
             v => (v && v >= 1) || 'La cantidad no puede ser menor a 1   ',
 
         ],
+        keyIdProducto:[],
         dialog: false,
         dialog2: false,
         dialogDelete: false,
+        mostrarCrudGeneral: true,
         mostrarFormCliente: false,
         mostrarFormProducto: false,
         mostrarFormExtra: false,
+        mostrarBotonGuardar: false,
         search: '',
         contadorVentas: {
             contador: 0,
@@ -181,14 +216,16 @@ export default {
                 sortable: false,
                 key: 'name',
             },
-            { title: 'Id', key: 'id' },
+            { title: 'N. Venta', key: 'id' },
             { title: 'Código de Producto', key: 'codProducto' },
             { title: 'Producto', key: 'producto' },
+            { title: 'Identificación', key: 'identificacion' },
+            { title: 'Nombre', key: 'cliente' },
             { title: 'Precio', key: 'precio' },
             { title: 'Cantidad', key: 'cantidad' },
-            { title: 'Descuento', key: 'descuento' },
+            { title: 'Descuento (%)', key: 'descuento' },
             { title: 'Valor Total', key: 'valorTotal' },
-            { title: 'Actions', key: 'actions', sortable: false },
+
         ],
         headersClientes: [
             {
@@ -223,6 +260,7 @@ export default {
         dessertsCantidadProducto: [],
         dessertsClientes: [],
         dessertsProductos: [],
+        dessertsCrudGeneral: [],
         editedIndex: -1,
         editedItem: {
             keyid: '',
@@ -233,8 +271,20 @@ export default {
             cantidad: 0,
             descuento: 0,
             valorTotal: 0,
-            identificacionCliente: 0,
-            nombreCliente: 0,
+            identificacion: 0,
+            cliente: 0,
+        },
+        editedItem2: {
+            keyid: '',
+            id: 0,
+            codProducto: 0,
+            producto: 0,
+            precio: 0,
+            cantidad: 0,
+            descuento: 0,
+            valorTotal: 0,
+            identificacion: 0,
+            cliente: 0,
         },
         defaultItem: {
             keyid: '',
@@ -245,9 +295,11 @@ export default {
             cantidad: 0,
             descuento: 0,
             valorTotal: 0,
-            identificacionCliente: 0,
-            nombreCliente: 0,
+            identificacion: 0,
+            cliente: 0,
         },
+        precioUnitario: [],
+        totalSinDescuento: []
     }),
 
     computed: {
@@ -267,10 +319,66 @@ export default {
 
     created() {
         this.initialize()
+        this.listarDatosCrudGeneral()
     },
 
     methods:
     {
+        complementoAgregarProductoVenta() {
+            this.mostrarBotonGuardar = true
+            this.editedItem = [];
+/*             this.actualizarDatosCantidad() */
+            this.desserts = [];
+            this.listarDatosCrudGeneral();
+            this.mostrarCrudGeneral = true;
+            this.mostrarFormExtra = false;
+            
+        },
+
+        /*Este es le metodo que nos permite agregar nuevos datos a firebase*/
+        async agregarProductoVenta() {
+            console.log(this.editedItem)
+
+            const colRef = collection(db, 'ventas')
+            const dataObj = {
+                id: this.contadorVentas.contador,
+                identificacion: this.editedItem2.identificacion,
+                cliente: this.editedItem2.cliente,
+                codProducto: this.editedItem2.codProducto,
+                producto: this.editedItem2.producto,
+                cantidad: this.editedItem.cantidad,
+                descuento: this.editedItem.descuento,
+                precio: this.editedItem.precio,
+                valorTotal: this.editedItem2.valorTotal,
+            }
+            const docRef = await addDoc(colRef, dataObj);
+            console.log("Creo el usuario con nombre", docRef.id);
+            this.complementoAgregarProductoVenta()
+        },
+
+
+        /* Con este metodo podemos mostrar los datos en la grilla trayendolos de la base de datos*/
+        async listarDatosCrudGeneral() {
+            const q = query(collection(db, "ventas"));
+            const resul = await getDocs(q);
+            resul.forEach((doc) => {
+                this.desserts.push({
+                    keyid: doc.id,
+                    id: doc.data().id,
+                    identificacion: doc.data().identificacion,
+                    cliente: doc.data().cliente,
+                    codProducto: doc.data().codProducto,
+                    producto: doc.data().producto,
+                    cantidad: doc.data().cantidad,
+                    descuento: doc.data().descuento,
+                    precio: doc.data().precio,
+                    valorTotal: doc.data().valorTotal,
+                })
+
+
+            });
+        },
+
         async unirFunciones2() {
             this.dialog2 = !this.dialog2;
             this.dessertsProductos = [];
@@ -280,27 +388,39 @@ export default {
             this.limpiarDessertClientes();
         },
 
-        autoCompletarCamposClientes() {
-            let identificacionClienteLet = this.dessertsClientes[this.editedIndex].identificacion;
-            this.$refs.llenarIdentificacion.value = identificacionClienteLet;
-            let nombreClienteLet = this.dessertsClientes[this.editedIndex].nombre;
-            this.$refs.llenarNombre.value = nombreClienteLet;
+        async autoCompletarCamposClientes() {
+            let identificacionLet = this.dessertsClientes[this.editedIndex].identificacion;
+            this.editedItem2.identificacion = identificacionLet
+            this.$refs.llenarIdentificacion.value = identificacionLet;
+            let clienteLet = this.dessertsClientes[this.editedIndex].nombre;
+            this.$refs.llenarNombre.value = clienteLet;
+            this.editedItem2.cliente = clienteLet
 
-            /*        this.editedItem.nombreCliente = nombreClienteLet;
-                this.editedItem.identificacionCliente = identificacionClienteLet; */
+
+
+
+            /*        this.editedItem.cliente = clienteLet;
+                this.editedItem.identificacion = identificacionLet; */
         },
-        autoCompletarCamposProductos() {
+
+        async autoCompletarCamposProductos() {
             let codProductoLet = this.dessertsProductos[this.editedIndex].codigo;
             this.$refs.llenarCodigo.value = codProductoLet;
+            this.editedItem2.codProducto = codProductoLet
             let productoLet = this.dessertsProductos[this.editedIndex].producto;
             this.$refs.llenarProducto.value = productoLet;
+            this.editedItem2.producto = productoLet
+
             let guardarCantidadProducto = this.dessertsProductos[this.editedIndex].cantidad;
             this.dessertsCantidadProducto = this.dessertsProductos[this.editedIndex].cantidad;
+            let precioUnitarioLet = this.dessertsProductos[this.editedIndex].precio;
+            this.$refs.precio.value = precioUnitarioLet;
+            this.precioUnitario = precioUnitarioLet
+            this.editedItem.precio = precioUnitarioLet
 
-            /*        this.editedItem.nombreCliente = nombreClienteLet;
-                this.editedItem.identificacionCliente = identificacionClienteLet; */
             return guardarCantidadProducto;
         },
+
 
 
         limpiarDessertClientes() {
@@ -310,12 +430,20 @@ export default {
         cambiarDialog() {
             this.dialog = false;
         },
+        cambiarEstadoContador() {
+            this.incrementarContador()
+            this.mostrarFormCliente = !this.mostrarFormCliente;
+            this.mostrarCrudGeneral = false;
+            this.mostrarCrudGeneral = true;
+            this.mostrarBotonGuardar = !this.mostrarBotonGuardar;
+        },
 
         cambiarEstado() {
             this.llamarContador();
             this.mostrarFormCliente = !this.mostrarFormCliente;
-
+            this.mostrarCrudGeneral = false
         },
+
 
         /* Con este metodo podemos mostrar los datos en la grilla trayendolos de la base de datos*/
         async listarDatosClientes() {
@@ -358,8 +486,20 @@ export default {
                     producto: doc.data().producto,
                     categoria: doc.data().categoria,
                     cantidad: doc.data().cantidad,
+                    precio: doc.data().precio,
                 });
 
+            })
+        },
+
+        /*Este metodo nos permite actualizar los datos en la base de datos */
+        async actualizarDatosCantidad() {
+            let actualizarCantidadLet = this.desserts.cantidad - this.editedItem.cantidad
+            console.log(this.editedItem.keyid)
+            const Ref = doc(db, "productos", this.keyIdProducto);
+            await updateDoc(Ref, {
+                
+                cantidad: actualizarCantidadLet ,
             })
         },
 
@@ -390,6 +530,26 @@ export default {
 
         },
 
+        async calcularValorTotal() {
+
+            let valorTotalFinal = this.precioUnitario * this.editedItem.cantidad;
+            this.$refs.valorTotal.value = valorTotalFinal;
+            this.totalSinDescuento = valorTotalFinal
+            this.calcularValorTotalDescuento()
+
+
+            return valorTotalFinal
+        },
+        async calcularValorTotalDescuento() {
+
+            let valorTotalFinalDescuento = this.totalSinDescuento - (this.totalSinDescuento * (this.editedItem.descuento / 100));
+            this.$refs.valorTotal.value = valorTotalFinalDescuento;
+            this.editedItem2.valorTotal = valorTotalFinalDescuento
+
+            return valorTotalFinalDescuento
+        },
+
+
         initialize() {
             this.desserts = [
                 /*                 {
@@ -416,6 +576,7 @@ export default {
         },
         editItemProductos(item) {
             this.editedIndex = this.dessertsProductos.indexOf(item)
+            this.keyIdProducto = this.dessertsProductos.indexOf(item).keyid
             this.editedItemProductos = Object.assign({}, item)
             this.dialog2 = false;
             this.mostrarFormExtra = true;
@@ -482,5 +643,19 @@ export default {
     margin-left: 85%;
     color: red;
     text-align: center;
+}
+
+.non-editable {
+    pointer-events: none;
+    background-color: transparent;
+    color: #1A237E;
+}
+
+.bordeContenedor {
+    border: 0.5px solid #ccc;
+
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(185, 163, 163, 0.3);
+
 }
 </style>

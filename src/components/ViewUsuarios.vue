@@ -326,7 +326,7 @@ export default {
         ciudad: this.editedItem.ciudad.ciudad,
         direccion: this.editedItem.via.tipo + ' ' + this.editedItem.vianum1 + ' # ' + this.editedItem.vianum2 + ' - ' + this.editedItem.vianum3 + " de " + this.editedItem.ciudad.ciudad + ", " + this.editedItem.departamento.departamento,
       }
-      const docRef = await addDoc(colRef, dataObj);
+      const docRef = await addDoc(colRef, dataObj); 
       console.log("Creo el usuario con nombre", docRef.id);
       this.incrementarContador();
     },
